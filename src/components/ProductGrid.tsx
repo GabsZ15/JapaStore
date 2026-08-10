@@ -7,52 +7,6 @@ import { EditableText } from './EditableText';
 import { useSettings } from '../contexts/SettingsContext';
 import { supabase } from '../lib/supabase';
 
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Camiseta Oversized Heavyweight Preta',
-    price: 129.90,
-    installments: 3,
-    imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600',
-    category: 'Roupas'
-  },
-  {
-    id: '2',
-    name: 'Moletom Essential Canguru Cinza',
-    price: 259.90,
-    originalPrice: 299.90,
-    discount: 15,
-    installments: 6,
-    imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=600',
-    category: 'Roupas'
-  },
-  {
-    id: '3',
-    name: 'Calça Cargo Utility Khaki',
-    price: 199.90,
-    installments: 4,
-    imageUrl: 'https://images.unsplash.com/photo-1624378439575-d1ead6bb246d?auto=format&fit=crop&q=80&w=600',
-    outOfStock: true,
-    category: 'Roupas'
-  },
-  {
-    id: '4',
-    name: 'Tênis Casual Retro Branco',
-    price: 349.90,
-    installments: 12,
-    imageUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=600',
-    category: 'Tenis'
-  },
-  {
-    id: '5',
-    name: 'Boné Dad Hat Logo Minimal',
-    price: 89.90,
-    installments: 2,
-    imageUrl: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600',
-    category: 'Acessorios'
-  }
-];
-
 interface ProductGridProps {
   title?: string;
   onTitleChange?: (newTitle: string) => void;
@@ -70,7 +24,7 @@ export function ProductGrid({
   linkTo = "/lancamentos",
   layout = 'carousel'
 }: ProductGridProps) {
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,9 +43,7 @@ export function ProductGrid({
         return;
       }
 
-      let allProducts = [...MOCK_PRODUCTS];
-
-      if (data && data.length > 0) {
+      if (data) {
         // Map Supabase columns to Product type
         const supabaseProducts: Product[] = data.map(item => ({
           id: item.id,
@@ -105,17 +57,16 @@ export function ProductGrid({
           description: item.description
         }));
         
-        allProducts = [...supabaseProducts, ...MOCK_PRODUCTS];
-      }
-
-      if (category) {
-        if (category.toLowerCase() === 'sale') {
-          setProducts(allProducts.filter(p => p.discount));
-        } else {
-          setProducts(allProducts.filter(p => p.category?.toLowerCase() === category.toLowerCase() || p.category?.toLowerCase() === 'acessorios'));
+        let filteredProducts = supabaseProducts;
+        if (category) {
+          if (category.toLowerCase() === 'sale') {
+            filteredProducts = supabaseProducts.filter(p => p.discount);
+          } else {
+            filteredProducts = supabaseProducts.filter(p => p.category?.toLowerCase() === category.toLowerCase() || p.category?.toLowerCase() === 'acessorios');
+          }
         }
-      } else {
-        setProducts(allProducts);
+        
+        setProducts(filteredProducts);
       }
     } catch (err) {
       console.warn('Failed to fetch products (probably no Supabase backend)', err);

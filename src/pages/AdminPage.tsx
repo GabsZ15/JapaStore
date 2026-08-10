@@ -242,9 +242,10 @@ export function AdminPage() {
         if (editingId === id) {
           resetForm();
         }
-      } catch (err) {
+        alert('Produto excluído com sucesso.');
+      } catch (err: any) {
         console.warn('Error deleting product:', err);
-        alert('Ocorreu um erro ao excluir o produto.');
+        alert('Não foi possível excluir o produto. ' + (err.message || ''));
       }
     }
   };
