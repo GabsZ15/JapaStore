@@ -76,9 +76,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const updateSettings = async (newSettings: SiteSettings) => {
     try {
-      // Optimistic update
-      setSettings(newSettings);
-      
       const { error } = await supabase
         .from('settings')
         .upsert({
@@ -97,9 +94,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         
       if (error) {
         console.warn('Error updating settings:', error);
+        throw error;
       }
+
+      // Update state only after successful database update
+      setSettings(newSettings);
     } catch (err) {
       console.warn('Failed to update settings', err);
+      throw err;
     }
   };
 

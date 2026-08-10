@@ -104,18 +104,22 @@ export function AdminPage() {
 
   const handleSaveSettings = async (e: FormEvent) => {
     e.preventDefault();
-    await updateSettings({
-      topBarText,
-      heroTitle,
-      heroSubtitle,
-      carouselTitle,
-      whatsappNumber,
-      navLink1: settings.navLink1,
-      navLink2: settings.navLink2,
-      navLink3: settings.navLink3,
-      navLink4: settings.navLink4,
-    });
-    alert('Configurações salvas com sucesso!');
+    try {
+      await updateSettings({
+        topBarText,
+        heroTitle,
+        heroSubtitle,
+        carouselTitle,
+        whatsappNumber,
+        navLink1: settings.navLink1,
+        navLink2: settings.navLink2,
+        navLink3: settings.navLink3,
+        navLink4: settings.navLink4,
+      });
+      alert('Configurações salvas com sucesso!');
+    } catch (err) {
+      alert('Erro ao salvar as configurações. Verifique o banco de dados.');
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {

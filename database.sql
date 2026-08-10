@@ -23,17 +23,27 @@ CREATE TABLE public.settings (
   hero_title TEXT,
   hero_subtitle TEXT,
   carousel_title TEXT,
+  whatsapp_number TEXT,
+  nav_link1 TEXT,
+  nav_link2 TEXT,
+  nav_link3 TEXT,
+  nav_link4 TEXT,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- 4. INSERIR CONFIGURAÇÕES INICIAIS
-INSERT INTO public.settings (id, top_bar_text, hero_title, hero_subtitle, carousel_title)
+INSERT INTO public.settings (id, top_bar_text, hero_title, hero_subtitle, carousel_title, whatsapp_number, nav_link1, nav_link2, nav_link3, nav_link4)
 VALUES (
   1, 
   'FRETE GRÁTIS PARA TODO BRASIL ACIMA DE R$ 299', 
   'NOVA COLEÇÃO ESTELAR', 
   'O futuro do streetwear já chegou. Peças exclusivas com design minimalista e conforto máximo para o seu dia a dia.', 
-  'Camisetas Para Todos os Momentos'
+  'Camisetas Para Todos os Momentos',
+  '5511999999999',
+  'Lançamentos',
+  'Roupas',
+  'Tênis',
+  'Sale'
 );
 
 -- 5. ATIVAR SEGURANÇA A NÍVEL DE LINHA (RLS)
