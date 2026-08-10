@@ -9,7 +9,7 @@ export function SalePage() {
           Aproveite nossos descontos imperdíveis. Peças selecionadas com descontos.
         </p>
       </div>
-      <ProductGrid title="Ofertas Ativas" category="Sale" linkText="Ver novidades" linkTo="/lancamentos" />
+      <ProductGrid title="Ofertas Ativas" category="Sale" linkText="Ver novidades" linkTo="/lancamentos" layout="grid" />
     </main>
   );
 }

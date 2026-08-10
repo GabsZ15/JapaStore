@@ -9,7 +9,7 @@ export function LancamentosPage() {
           Confira as novidades da Japastore. Novas coleções e peças exclusivas adicionadas recentemente.
         </p>
       </div>
-      <ProductGrid title="Últimos Lançamentos" linkText="Voltar ao início" linkTo="/" />
+      <ProductGrid title="Últimos Lançamentos" linkText="Voltar ao início" linkTo="/" layout="grid" />
     </main>
   );
 }

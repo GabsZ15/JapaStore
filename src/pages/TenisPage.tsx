@@ -9,7 +9,7 @@ export function TenisPage() {
           Os melhores sneakers para complementar o seu visual streetwear. Modelos exclusivos e confortáveis.
         </p>
       </div>
-      <ProductGrid title="Sneakers Exclusivos" category="Tenis" linkText="Ir para sale" linkTo="/sale" />
+      <ProductGrid title="Sneakers Exclusivos" category="Tenis" linkText="Ir para sale" linkTo="/sale" layout="grid" />
     </main>
   );
 }

@@ -9,7 +9,7 @@ export function RoupasPage() {
           Explore nossa linha completa de vestuário streetwear. Camisetas oversized, moletons, calças cargo e mais.
         </p>
       </div>
-      <ProductGrid title="Todas as Roupas" category="Roupas" linkText="Ver lançamentos" linkTo="/lancamentos" />
+      <ProductGrid title="Todas as Roupas" category="Roupas" linkText="Ver lançamentos" linkTo="/lancamentos" layout="grid" />
     </main>
   );
 }

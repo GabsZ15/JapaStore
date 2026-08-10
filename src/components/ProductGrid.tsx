@@ -59,6 +59,7 @@ interface ProductGridProps {
   category?: string;
   linkText?: string;
   linkTo?: string;
+  layout?: 'grid' | 'carousel';
 }
 
 export function ProductGrid({ 
@@ -66,7 +67,8 @@ export function ProductGrid({
   onTitleChange,
   category, 
   linkText = "Ver tudo", 
-  linkTo = "/lancamentos" 
+  linkTo = "/lancamentos",
+  layout = 'carousel'
 }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -149,38 +151,48 @@ export function ProductGrid({
         )}
       </div>
       
-      <div className="relative group">
-        <button 
-          onClick={scrollLeft}
-          className="absolute top-[35%] left-2 md:left-4 -translate-y-1/2 z-10 p-3 bg-white/80 hover:bg-white dark:bg-zinc-900/80 dark:hover:bg-zinc-900 text-zinc-900 dark:text-white rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none backdrop-blur-sm"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
+      {layout === 'carousel' ? (
+        <div className="relative group">
+          <button 
+            onClick={scrollLeft}
+            className="absolute top-[35%] left-2 md:left-4 -translate-y-1/2 z-10 p-3 bg-white/80 hover:bg-white dark:bg-zinc-900/80 dark:hover:bg-zinc-900 text-zinc-900 dark:text-white rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none backdrop-blur-sm"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
 
-        <button 
-          onClick={scrollRight}
-          className="absolute top-[35%] right-2 md:right-4 -translate-y-1/2 z-10 p-3 bg-white/80 hover:bg-white dark:bg-zinc-900/80 dark:hover:bg-zinc-900 text-zinc-900 dark:text-white rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none backdrop-blur-sm"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
+          <button 
+            onClick={scrollRight}
+            className="absolute top-[35%] right-2 md:right-4 -translate-y-1/2 z-10 p-3 bg-white/80 hover:bg-white dark:bg-zinc-900/80 dark:hover:bg-zinc-900 text-zinc-900 dark:text-white rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none backdrop-blur-sm"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
 
-        <div 
-          ref={carouselRef}
-          className="flex overflow-x-auto gap-4 sm:gap-6 pb-8 snap-x snap-mandatory hide-scrollbar relative z-0"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <style>{`
-            .hide-scrollbar::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
+          <div 
+            ref={carouselRef}
+            className="flex overflow-x-auto gap-4 sm:gap-6 pb-8 snap-x snap-mandatory hide-scrollbar relative z-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <style>{`
+              .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            {products.map((product) => (
+              <div key={product.id} className="min-w-[160px] max-w-[160px] sm:min-w-[200px] sm:max-w-[200px] md:min-w-[260px] md:max-w-[260px] flex-shrink-0 snap-start">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-6">
           {products.map((product) => (
-            <div key={product.id} className="min-w-[160px] max-w-[160px] sm:min-w-[200px] sm:max-w-[200px] md:min-w-[260px] md:max-w-[260px] flex-shrink-0 snap-start">
+            <div key={product.id}>
               <ProductCard product={product} />
             </div>
           ))}
         </div>
-      </div>
+      )}
       
       <div className="mt-4 flex justify-center">
         <Link to={linkTo} className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
