@@ -28,9 +28,9 @@ export function Footer() {
 
   return (
     <>
-      <footer className="bg-zinc-950 dark:bg-black text-zinc-300 py-16 border-t border-zinc-900 transition-colors duration-300">
+      <footer className="bg-zinc-950 dark:bg-black text-zinc-300 py-10 md:py-16 border-t border-zinc-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-8 md:mb-12">
           
           <div className="md:col-span-1">
             <Link to="/" className="flex flex-col items-start mb-6">

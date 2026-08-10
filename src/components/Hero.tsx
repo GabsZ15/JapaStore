@@ -20,7 +20,7 @@ export function Hero() {
           as="h1"
           value={settings.heroTitle}
           onSave={(newValue) => updateSettings({ ...settings, heroTitle: newValue })}
-          className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter uppercase max-w-3xl leading-tight inline-block"
+          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter uppercase max-w-3xl leading-tight inline-block"
         />
         <div className="mt-6">
           <EditableText 
@@ -33,7 +33,7 @@ export function Hero() {
         <div className="mt-10">
           <Link 
             to="/lancamentos" 
-            className="inline-block bg-white dark:bg-zinc-100 text-black px-10 py-4 font-bold uppercase tracking-wider text-sm hover:bg-zinc-200 dark:hover:bg-white transition-colors"
+            className="inline-block bg-white dark:bg-zinc-100 text-black px-6 py-3 sm:px-10 sm:py-4 font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-white transition-colors"
           >
             Comprar Agora
           </Link>

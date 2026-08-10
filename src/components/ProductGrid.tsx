@@ -175,7 +175,7 @@ export function ProductGrid({
             }
           `}</style>
           {products.map((product) => (
-            <div key={product.id} className="min-w-[200px] max-w-[200px] sm:min-w-[260px] sm:max-w-[260px] flex-shrink-0 snap-start">
+            <div key={product.id} className="min-w-[160px] max-w-[160px] sm:min-w-[200px] sm:max-w-[200px] md:min-w-[260px] md:max-w-[260px] flex-shrink-0 snap-start">
               <ProductCard product={product} />
             </div>
           ))}
