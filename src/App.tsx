@@ -119,14 +119,18 @@ function StoreApp() {
   );
 }
 
+import { AuthProvider } from './contexts/AuthContext';
+
 export default function App() {
   return (
-    <AdminProvider>
-      <SettingsProvider>
-        <CartProvider>
-          <StoreApp />
-        </CartProvider>
-      </SettingsProvider>
-    </AdminProvider>
+    <AuthProvider>
+      <AdminProvider>
+        <SettingsProvider>
+          <CartProvider>
+            <StoreApp />
+          </CartProvider>
+        </SettingsProvider>
+      </AdminProvider>
+    </AuthProvider>
   );
 }

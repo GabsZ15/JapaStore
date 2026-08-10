@@ -5,6 +5,7 @@ import { useFavorites } from '../contexts/FavoritesContext';
 import { useCart } from '../contexts/CartContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { EditableText } from './EditableText';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   toggleTheme: () => void;
@@ -20,6 +21,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
   const { favorites } = useFavorites();
   const { cartCount } = useCart();
   const { settings, updateSettings } = useSettings();
+  const { user, signOut } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,9 +93,31 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
               <button onClick={toggleTheme} className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors hidden sm:block" aria-label="Toggle Dark Mode">
                 {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
-              <button onClick={onOpenAuth} className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors hidden sm:block">
-                <User className="h-5 w-5" />
-              </button>
+              {user ? (
+                <div className="relative group hidden sm:block">
+                  <button className="flex items-center gap-2 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
+                    <User className="h-5 w-5" />
+                    <span className="text-sm font-bold truncate max-w-[100px]">
+                      {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
+                    </span>
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-950 shadow-lg border border-zinc-200 dark:border-zinc-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                    <div className="p-3 border-b border-zinc-100 dark:border-zinc-800">
+                      <p className="text-xs text-zinc-500 truncate">{user.email}</p>
+                    </div>
+                    <button 
+                      onClick={() => signOut()}
+                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors font-bold"
+                    >
+                      Sair da conta
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={onOpenAuth} className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors hidden sm:block">
+                  <User className="h-5 w-5" />
+                </button>
+              )}
               <Link to="/favoritos" className="hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors hidden sm:block relative">
                 <Heart className="h-5 w-5" />
                 {favorites.length > 0 && (
@@ -184,13 +208,30 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
 
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
           <div className="flex flex-col gap-4">
-            <button 
-              onClick={() => { closeMobileMenu(); onOpenAuth(); }}
-              className="flex items-center gap-3 text-zinc-900 dark:text-zinc-100 font-bold"
-            >
-              <User className="h-5 w-5" />
-              <span className="text-sm uppercase tracking-wide">Entrar / Cadastrar</span>
-            </button>
+            {user ? (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 text-zinc-900 dark:text-zinc-100 font-bold">
+                  <User className="h-5 w-5" />
+                  <span className="text-sm uppercase tracking-wide truncate">
+                    Olá, {user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0]}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => { closeMobileMenu(); signOut(); }}
+                  className="flex items-center gap-3 text-red-600 dark:text-red-500 font-bold"
+                >
+                  <span className="text-sm uppercase tracking-wide">Sair da conta</span>
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => { closeMobileMenu(); onOpenAuth(); }}
+                className="flex items-center gap-3 text-zinc-900 dark:text-zinc-100 font-bold"
+              >
+                <User className="h-5 w-5" />
+                <span className="text-sm uppercase tracking-wide">Entrar / Cadastrar</span>
+              </button>
+            )}
             <Link 
               to="/favoritos" 
               onClick={closeMobileMenu}

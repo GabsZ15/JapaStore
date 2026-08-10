@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -8,8 +9,73 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Erro ao fazer login.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
+
+      if (error) throw error;
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Erro ao criar conta.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setError(err.message || 'O Login com Google requer configuração adicional no Supabase/Google Cloud (ID do cliente e segredo).');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -33,7 +99,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 ? 'text-zinc-900 dark:text-white border-b-2 border-zinc-900 dark:border-white' 
                 : 'text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400'
             }`}
-            onClick={() => setActiveTab('login')}
+            onClick={() => { setActiveTab('login'); setError(null); }}
           >
             Entrar
           </button>
@@ -43,20 +109,27 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 ? 'text-zinc-900 dark:text-white border-b-2 border-zinc-900 dark:border-white' 
                 : 'text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400'
             }`}
-            onClick={() => setActiveTab('register')}
+            onClick={() => { setActiveTab('register'); setError(null); }}
           >
             Criar Conta
           </button>
         </div>
 
         <div className="p-8 overflow-y-auto">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 text-sm rounded">
+              {error}
+            </div>
+          )}
           {activeTab === 'login' ? (
-            <form className="flex flex-col gap-5" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
+            <form className="flex flex-col gap-5" onSubmit={handleLogin}>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">E-mail</label>
                 <input 
                   type="email" 
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
                   placeholder="Seu e-mail"
                 />
@@ -70,21 +143,25 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   type="password" 
                   required
                   minLength={5}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
                   placeholder="Sua senha"
                 />
               </div>
-              <button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors">
-                Entrar
+              <button disabled={loading} type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50">
+                {loading ? 'Aguarde...' : 'Entrar'}
               </button>
             </form>
           ) : (
-            <form className="flex flex-col gap-5" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
+            <form className="flex flex-col gap-5" onSubmit={handleRegister}>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Nome Completo</label>
                 <input 
                   type="text" 
                   required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
                   placeholder="Seu nome"
                 />
@@ -94,6 +171,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <input 
                   type="email" 
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
                   placeholder="Seu e-mail"
                 />
@@ -104,12 +183,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   type="password" 
                   required
                   minLength={5}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
                   placeholder="Crie uma senha"
                 />
               </div>
-              <button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors">
-                Criar Conta
+              <button disabled={loading} type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50">
+                {loading ? 'Aguarde...' : 'Criar Conta'}
               </button>
             </form>
           )}
@@ -126,10 +207,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
             <div className="mt-6">
               <button 
-                onClick={() => {
-                  alert('Login simulado (Integração com backend foi recusada).');
-                  onClose();
-                }}
+                onClick={handleGoogleLogin}
                 className="w-full flex items-center justify-center gap-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
