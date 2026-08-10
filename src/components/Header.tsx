@@ -43,7 +43,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
           {/* Logo */}
           <div className="flex-1 md:flex-none flex justify-center md:justify-start">
             <Link to="/" className="flex flex-col items-center">
-              <img src="/logo.png" alt="JAPA STORE" className="h-16 w-auto object-contain rounded-md" />
+              <img src="/logo.jpg" alt="JAPA STORE" className="h-16 w-auto object-contain rounded-md" />
             </Link>
           </div>
 

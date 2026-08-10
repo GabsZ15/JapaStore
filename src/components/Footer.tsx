@@ -34,7 +34,7 @@ export function Footer() {
           
           <div className="md:col-span-1">
             <Link to="/" className="flex flex-col items-start mb-6">
-              <img src="/logo.png" alt="JAPA STORE" className="h-16 w-auto object-contain rounded-md" />
+              <img src="/logo.jpg" alt="JAPA STORE" className="h-16 w-auto object-contain rounded-md" />
             </Link>
             <p className="text-sm text-zinc-400 mb-6 max-w-xs leading-relaxed">
               Streetwear e moda casual para quem busca atitude e minimalismo. O melhor do design contemporâneo focado em qualidade e exclusividade.
