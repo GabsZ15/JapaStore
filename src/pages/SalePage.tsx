@@ -1,15 +1,35 @@
 import { ProductGrid } from '../components/ProductGrid';
+import { useSettings } from '../contexts/SettingsContext';
+import { EditableText } from '../components/EditableText';
+// from '../contexts/SettingsContext';
 
 export function SalePage() {
+  const { settings, updateSettings } = useSettings();
+  const content = settings.siteContent.pages.sale;
+
+  const handleUpdate = (field: string, value: string) => {
+    updateSettings({
+      ...settings,
+      siteContent: {
+        ...settings.siteContent,
+        pages: {
+          ...settings.siteContent.pages,
+          sale: {
+            ...content,
+            [field]: value
+          }
+        }
+      }
+    });
+  };
+
   return (
     <main className="min-h-screen flex flex-col">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6 text-red-600 dark:text-red-500 transition-colors duration-300">Sale</h1>
-        <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto transition-colors duration-300">
-          Aproveite nossos descontos imperdíveis. Peças selecionadas com descontos.
-        </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 flex flex-col items-center justify-center text-center">
+        <EditableText as="h1" value={content.title} onSave={(v) => handleUpdate('title', v)} className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6 text-red-600 dark:text-red-500 transition-colors duration-300" />
+        <EditableText as="p" value={content.subtitle} onSave={(v) => handleUpdate('subtitle', v)} className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto transition-colors duration-300" />
       </div>
-      <ProductGrid title="Ofertas Ativas" category="Sale" linkText="Ver novidades" linkTo="/lancamentos" layout="grid" />
+      <ProductGrid title={content.gridTitle} onTitleChange={(v) => handleUpdate('gridTitle', v)} category="Sale" linkText={content.ctaText} onLinkTextChange={(v) => handleUpdate('ctaText', v)} linkTo="/camisetas" layout="grid" />
     </main>
   );
 }

@@ -7,7 +7,11 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
+import { useSettings } from '../contexts/SettingsContext';
+
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+  const { settings } = useSettings();
+  const texts = settings.siteContent.authModal;
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   
   const [email, setEmail] = useState('');
@@ -100,9 +104,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 : 'text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400'
             }`}
             onClick={() => { setActiveTab('login'); setError(null); }}
-          >
-            Entrar
-          </button>
+          >{texts.loginTab}</button>
           <button
             className={`flex-1 py-4 text-sm font-bold uppercase tracking-wider transition-colors ${
               activeTab === 'register' 
@@ -110,9 +112,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 : 'text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400'
             }`}
             onClick={() => { setActiveTab('register'); setError(null); }}
-          >
-            Criar Conta
-          </button>
+          >{texts.registerTab}</button>
         </div>
 
         <div className="p-8 overflow-y-auto">
@@ -124,20 +124,20 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {activeTab === 'login' ? (
             <form className="flex flex-col gap-5" onSubmit={handleLogin}>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">E-mail</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">{texts.emailLabel}</label>
                 <input 
                   type="email" 
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
-                  placeholder="Seu e-mail"
+                  placeholder={texts.emailPlaceholder}
                 />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">Senha</label>
-                  <a href="#" className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors underline underline-offset-2">Esqueceu a senha?</a>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">{texts.passwordLabel}</label>
+                  <a href="#" className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors underline underline-offset-2">{texts.forgotPasswordText}</a>
                 </div>
                 <input 
                   type="password" 
@@ -146,39 +146,39 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
-                  placeholder="Sua senha"
+                  placeholder={texts.passwordPlaceholder}
                 />
               </div>
               <button disabled={loading} type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50">
-                {loading ? 'Aguarde...' : 'Entrar'}
+                {loading ? texts.loadingButton : texts.loginButton}
               </button>
             </form>
           ) : (
             <form className="flex flex-col gap-5" onSubmit={handleRegister}>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Nome Completo</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">{texts.nameLabel}</label>
                 <input 
                   type="text" 
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
-                  placeholder="Seu nome"
+                  placeholder={texts.namePlaceholder}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">E-mail</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">{texts.emailLabel}</label>
                 <input 
                   type="email" 
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
-                  placeholder="Seu e-mail"
+                  placeholder={texts.emailPlaceholder}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Senha</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">{texts.passwordLabel}</label>
                 <input 
                   type="password" 
                   required
@@ -186,11 +186,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white"
-                  placeholder="Crie uma senha"
+                  placeholder={texts.createPasswordPlaceholder}
                 />
               </div>
               <button disabled={loading} type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50">
-                {loading ? 'Aguarde...' : 'Criar Conta'}
+                {loading ? texts.loadingButton : texts.registerButton}
               </button>
             </form>
           )}
@@ -201,7 +201,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <div className="w-full border-t border-zinc-200 dark:border-zinc-800"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-white dark:bg-zinc-950 px-2 text-zinc-500 uppercase font-bold tracking-wider transition-colors duration-300">Ou acesse com</span>
+                <span className="bg-white dark:bg-zinc-950 px-2 text-zinc-500 uppercase font-bold tracking-wider transition-colors duration-300">{texts.orAccessWith}</span>
               </div>
             </div>
 

@@ -3,9 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Product } from '../types';
+import { mapSupabaseProduct } from '../utils/productUtils';
 import { ProductCard } from '../components/ProductCard';
+import { useSettings } from '../contexts/SettingsContext';
 
 export function SearchPage() {
+  const { settings } = useSettings();
+  const texts = settings.siteContent.searchPage;
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   
@@ -34,22 +38,12 @@ export function SearchPage() {
       if (sbError) throw sbError;
 
       if (data) {
-        const mappedProducts: Product[] = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: Number(item.price),
-          installments: item.installments,
-          discount: item.discount,
-          category: item.category,
-          imageUrl: item.image_url,
-          outOfStock: item.out_of_stock,
-          description: item.description
-        }));
+        const mappedProducts: Product[] = data.map(mapSupabaseProduct);
         setProducts(mappedProducts);
       }
     } catch (err: any) {
       console.warn('Error searching products:', err);
-      setError('Não foi possível realizar a busca no momento.');
+      setError(texts.errorText);
     } finally {
       setLoading(false);
     }
@@ -61,14 +55,12 @@ export function SearchPage() {
         <div className="bg-zinc-100 dark:bg-zinc-900 p-4 rounded-full mb-6">
           <Search className="h-8 w-8 text-zinc-900 dark:text-white" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">
-          Resultados da busca
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">{texts.title}</h1>
         <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg">
           {query ? (
-            <>Mostrando resultados para: <span className="font-bold text-zinc-900 dark:text-white">"{query}"</span></>
+            <>{texts.showingResultsFor} <span className="font-bold text-zinc-900 dark:text-white">"{query}"</span></>
           ) : (
-            'Digite algo para buscar em nossa loja.'
+            texts.emptyStateText
           )}
         </p>
       </div>
@@ -76,7 +68,7 @@ export function SearchPage() {
       {loading && (
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-zinc-900 dark:text-white mb-4" />
-          <p className="text-zinc-500 dark:text-zinc-400">Buscando produtos...</p>
+          <p className="text-zinc-500 dark:text-zinc-400">{texts.searchingText}</p>
         </div>
       )}
 
@@ -87,9 +79,7 @@ export function SearchPage() {
       )}
 
       {!loading && !error && query && products.length === 0 && (
-        <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">
-          Nenhum produto encontrado para sua busca no momento.
-        </div>
+        <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">{texts.noResultsText}</div>
       )}
 
       {!loading && !error && products.length > 0 && (

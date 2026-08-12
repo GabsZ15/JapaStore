@@ -1,15 +1,17 @@
 import React from 'react';
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Edit, Trash2, Plus, Save, Store, UploadCloud, X, Settings, ShoppingBag, Lock, LogIn } from 'lucide-react';
+import { ContentEditor } from '../components/admin/ContentEditor';
+import { ArrowLeft, Edit, Trash2, Plus, Save, Store, UploadCloud, X, ImagePlus, Settings, ShoppingBag, Lock, LogIn, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Product } from '../types';
+import { mapSupabaseProduct, stringifyProductDescription } from '../utils/productUtils';
 import { useSettings } from '../contexts/SettingsContext';
 import { supabase } from '../lib/supabase';
 
 export function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [secretKey, setSecretKey] = useState('');
-  const [activeTab, setActiveTab] = useState<'products' | 'settings'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'settings' | 'content'>('products');
   
   const [products, setProducts] = useState<Product[]>([]);
   const { settings, updateSettings } = useSettings();
@@ -38,10 +40,42 @@ export function AdminPage() {
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [sizes, setSizes] = useState<string>('');
+  const [extraImages, setExtraImages] = useState<string[]>([]);
 
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const extraFilesInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExtraFilesInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => handleExtraFileSelect(file));
+    }
+  };
+
+  const handleExtraFileSelect = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione arquivos de imagem válidos.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setExtraImages(prev => [...prev, reader.result as string]);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeExtraImage = (index: number) => {
+    setExtraImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+
+  // Delete modal state
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteFeedback, setDeleteFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
   // Load auth state
   useEffect(() => {
@@ -69,17 +103,7 @@ export function AdminPage() {
       }
 
       if (data) {
-        const mappedProducts: Product[] = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: Number(item.price),
-          installments: item.installments,
-          discount: item.discount,
-          category: item.category,
-          imageUrl: item.image_url,
-          outOfStock: item.out_of_stock,
-          description: item.description
-        }));
+        const mappedProducts: Product[] = data.map(mapSupabaseProduct);
         setProducts(mappedProducts);
       }
     } catch (err) {
@@ -115,6 +139,7 @@ export function AdminPage() {
         navLink2: settings.navLink2,
         navLink3: settings.navLink3,
         navLink4: settings.navLink4,
+        siteContent: settings.siteContent,
       });
       alert('Configurações salvas com sucesso!');
     } catch (err) {
@@ -171,6 +196,10 @@ export function AdminPage() {
     const priceNum = parseFloat(price.replace(',', '.'));
     const installmentsNum = allowInstallments ? parseInt(maxInstallments) : 1;
     
+    const parsedSizes = sizes.split(',').map(s => s.trim()).filter(s => s !== '');
+    const parsedExtraImages = extraImages;
+    const finalDescription = stringifyProductDescription(description, parsedSizes, parsedExtraImages);
+    
     try {
       if (editingId) {
         // Update existing in Supabase
@@ -182,7 +211,7 @@ export function AdminPage() {
             installments: installmentsNum,
             category,
             image_url: imageUrl,
-            description
+            description: finalDescription
           })
           .eq('id', editingId);
 
@@ -198,7 +227,7 @@ export function AdminPage() {
             installments: installmentsNum,
             image_url: imageUrl,
             category,
-            description
+            description: finalDescription
           });
 
         if (error) throw error;
@@ -222,31 +251,47 @@ export function AdminPage() {
     setCategory(product.category || '');
     setImageUrl(product.imageUrl);
     setDescription(product.description || '');
+    setSizes((product.sizes || []).join(', '));
+    setExtraImages(product.extraImages || []);
     
     // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-      try {
-        const { error } = await supabase
-          .from('products')
-          .delete()
-          .eq('id', id);
+  const handleDelete = (id: string) => {
+    setProductToDelete(id);
+    setDeleteFeedback(null);
+  };
 
-        if (error) throw error;
-        
-        await fetchProducts();
-        
-        if (editingId === id) {
-          resetForm();
-        }
-        alert('Produto excluído com sucesso.');
-      } catch (err: any) {
-        console.warn('Error deleting product:', err);
-        alert('Não foi possível excluir o produto. ' + (err.message || ''));
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+    
+    setIsDeleting(true);
+    setDeleteFeedback(null);
+    
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productToDelete);
+
+      if (error) throw error;
+      
+      await fetchProducts();
+      
+      if (editingId === productToDelete) {
+        resetForm();
       }
+      
+      setProductToDelete(null);
+      setDeleteFeedback({ type: 'success', message: 'Produto excluído com sucesso.' });
+      
+      setTimeout(() => setDeleteFeedback(null), 3000);
+    } catch (err: any) {
+      console.warn('Error deleting product:', err);
+      setDeleteFeedback({ type: 'error', message: 'Não foi possível excluir o produto. ' + (err.message || '') });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -259,6 +304,8 @@ export function AdminPage() {
     setCategory('');
     setImageUrl('');
     setDescription('');
+      setSizes('');
+      setExtraImages([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -350,13 +397,28 @@ export function AdminPage() {
             <ShoppingBag className="h-4 w-4" />
             Produtos
           </button>
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'settings' ? 'border-zinc-900 dark:border-white text-zinc-900 dark:text-white' : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
-          >
-            <Settings className="h-4 w-4" />
-            Configurações
-          </button>
+                      <button 
+              onClick={() => setActiveTab('settings')}
+              className={`flex items-center gap-2 px-4 py-3 font-bold uppercase tracking-wider text-xs transition-colors ${
+                activeTab === 'settings' 
+                  ? 'border-b-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white' 
+                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+              Configurações
+            </button>
+            <button 
+              onClick={() => setActiveTab('content')}
+              className={`flex items-center gap-2 px-4 py-3 font-bold uppercase tracking-wider text-xs transition-colors ${
+                activeTab === 'content' 
+                  ? 'border-b-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white' 
+                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              <Edit className="h-4 w-4" />
+              Conteúdo
+            </button>
         </div>
       </header>
 
@@ -578,6 +640,56 @@ export function AdminPage() {
                   placeholder="Breve descrição do produto..."
                 />
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Tamanhos Disponíveis (separados por vírgula)</label>
+                  <input 
+                    type="text" 
+                    value={sizes}
+                    onChange={e => setSizes(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md"
+                    placeholder="Ex: P, M, G, GG ou 38, 40, 42"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Imagens Adicionais</label>
+                  <div className="flex flex-col gap-4">
+                    <button
+                      type="button"
+                      onClick={() => extraFilesInputRef.current?.click()}
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm font-bold uppercase tracking-wider hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors dark:text-white rounded-md border-dashed flex items-center justify-center gap-2"
+                    >
+                      <ImagePlus className="w-5 h-5" /> Adicionar Imagens
+                    </button>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple
+                      className="hidden" 
+                      ref={extraFilesInputRef}
+                      onChange={handleExtraFilesInput}
+                    />
+                    
+                    {extraImages.length > 0 && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {extraImages.map((img, index) => (
+                          <div key={index} className="relative aspect-square bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-hidden group">
+                            <img src={img} alt={`Extra ${index + 1}`} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => removeExtraImage(index)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
 
               <div className="flex gap-3 mt-4">
                 {editingId && (
@@ -685,6 +797,64 @@ export function AdminPage() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-xl shadow-xl w-full max-w-sm">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-500 mb-4">
+              <AlertTriangle className="h-6 w-6" />
+              <h3 className="text-lg font-bold">Excluir Produto</h3>
+            </div>
+            <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-sm">
+              Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
+            </p>
+            
+            {deleteFeedback && deleteFeedback.type === 'error' && (
+              <div className="mb-4 p-3 rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+                {deleteFeedback.message}
+              </div>
+            )}
+            
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setProductToDelete(null);
+                  setDeleteFeedback(null);
+                }}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white disabled:opacity-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md flex items-center gap-2 transition-colors"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Excluindo...
+                  </>
+                ) : (
+                  'Excluir'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Success Toast */}
+      {deleteFeedback && deleteFeedback.type === 'success' && (
+        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-4 py-3 rounded-md shadow-lg animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="h-5 w-5 text-green-500" />
+          <span className="text-sm font-medium">{deleteFeedback.message}</span>
+        </div>
+      )}
     </div>
   );
 }

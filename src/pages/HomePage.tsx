@@ -1,5 +1,6 @@
 import { Hero } from '../components/Hero';
 import { ProductGrid } from '../components/ProductGrid';
+import { HomeCategories } from '../components/HomeCategories';
 import { Benefits } from '../components/Benefits';
 import { useSettings } from '../contexts/SettingsContext';
 
@@ -13,6 +14,7 @@ export function HomePage() {
         title={settings.carouselTitle} 
         onTitleChange={(newTitle) => updateSettings({ ...settings, carouselTitle: newTitle })}
       />
+      <HomeCategories />
       <Benefits />
     </main>
   );

@@ -32,7 +32,7 @@ export function Hero() {
         </div>
         <div className="mt-10">
           <Link 
-            to="/lancamentos" 
+            to="/camisetas" 
             className="inline-block bg-white dark:bg-zinc-100 text-black px-6 py-3 sm:px-10 sm:py-4 font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-white transition-colors"
           >
             Comprar Agora

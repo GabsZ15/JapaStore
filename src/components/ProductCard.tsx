@@ -3,12 +3,17 @@ import { Heart, ShoppingBag } from 'lucide-react';
 import { Product } from '../types';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { useCart } from '../contexts/CartContext';
+import { useSettings } from '../contexts/SettingsContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { settings } = useSettings();
+  const navigate = useNavigate();
+  const texts = settings?.siteContent?.productCard;
   const { toggleFavorite, isFavorite } = useFavorites();
   const { addToCart, setIsCartOpen } = useCart();
   const favorited = isFavorite(product.id);
@@ -32,7 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group cursor-pointer flex flex-col h-full">
+    <div onClick={() => navigate(`/produto/${product.id}`)} className="group cursor-pointer flex flex-col h-full">
       <div className="relative bg-zinc-100 dark:bg-zinc-900 aspect-[3/4] overflow-hidden mb-4 transition-colors duration-300">
         <img 
           src={product.imageUrl} 
@@ -41,9 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
         />
         
         {product.outOfStock ? (
-          <div className="absolute top-3 left-3 bg-zinc-900 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-            Esgotado
-          </div>
+          <div className="absolute top-3 left-3 bg-zinc-900 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">{texts.outOfStockBadge}</div>
         ) : product.discount ? (
           <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 uppercase tracking-wide">
             -{product.discount}%
@@ -76,12 +79,10 @@ export function ProductCard({ product }: ProductCardProps) {
         
         {product.installments > 1 ? (
           <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium transition-colors duration-300 mb-4 block">
-            ou {product.installments}x de {formatCurrency(installmentValue)}
+            {texts.installmentPrefix} {product.installments}{texts.installmentSuffix} {formatCurrency(installmentValue)}
           </span>
         ) : (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium transition-colors duration-300 mb-4 block h-[18px]">
-            À vista
-          </span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium transition-colors duration-300 mb-4 block h-[18px]">{texts.cashPrefix}</span>
         )}
 
         <div className="mt-auto pt-2">
@@ -95,7 +96,7 @@ export function ProductCard({ product }: ProductCardProps) {
             }`}
           >
             <ShoppingBag className="h-4 w-4" />
-            {product.outOfStock ? 'Indisponível' : 'Comprar'}
+            {product.outOfStock ? texts.unavailableButton : texts.buyButton}
           </button>
         </div>
       </div>

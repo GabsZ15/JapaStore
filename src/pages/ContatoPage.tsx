@@ -1,16 +1,18 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
 
+import { useSettings } from '../contexts/SettingsContext';
+
 export function ContatoPage() {
+  const { settings } = useSettings();
+  const content = settings.siteContent.contact;
   return (
     <main className="min-h-screen py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">
-            Fale Conosco
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">{content.title}</h1>
           <p className="text-zinc-500 dark:text-zinc-400 font-medium">
-            Estamos aqui para ajudar. Preencha o formulário ou utilize nossos canais de atendimento.
+            {content.subtitle}
           </p>
         </div>
 
@@ -29,7 +31,7 @@ export function ContatoPage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-sm uppercase tracking-wider text-zinc-900 dark:text-white mb-1">E-mail</h4>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">contato@japastore.com.br</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.email}</p>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Resposta em até 24h úteis</p>
                 </div>
               </div>
@@ -40,8 +42,8 @@ export function ContatoPage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-sm uppercase tracking-wider text-zinc-900 dark:text-white mb-1">WhatsApp / Telefone</h4>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">(11) 99999-9999</p>
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Segunda a Sexta, das 09h às 18h</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.phone}</p>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">{content.businessHours}</p>
                 </div>
               </div>
 
@@ -51,8 +53,8 @@ export function ContatoPage() {
                 </div>
                 <div>
                   <h4 className="font-bold text-sm uppercase tracking-wider text-zinc-900 dark:text-white mb-1">Escritório Central</h4>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">Av. Paulista, 1000 - Bela Vista</p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">São Paulo - SP, 01310-100</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.addressLine1}</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.addressLine2}</p>
                 </div>
               </div>
             </div>

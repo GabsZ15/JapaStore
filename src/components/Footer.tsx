@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../contexts/AdminContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { X, Lock, LogIn } from 'lucide-react';
 
 export function Footer() {
   const { enableAdminMode } = useAdmin();
+  const { settings } = useSettings();
   const [showPrompt, setShowPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,7 +39,7 @@ export function Footer() {
               <img src="/logo.jpg" alt="JAPA STORE" className="h-16 w-auto object-contain rounded-md" />
             </Link>
             <p className="text-sm text-zinc-400 mb-6 max-w-xs leading-relaxed">
-              Streetwear e moda casual para quem busca atitude e minimalismo. O melhor do design contemporâneo focado em qualidade e exclusividade.
+              {settings.siteContent.footer.aboutText}
             </p>
           </div>
 
@@ -65,10 +67,10 @@ export function Footer() {
             <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-6">Contato</h4>
             <ul className="space-y-4 text-sm font-medium">
               <li><Link to="/contato" className="hover:text-white transition-colors">Atendimento via WhatsApp</Link></li>
-              <li><Link to="/contato" className="hover:text-white transition-colors">contato@japastore.com.br</Link></li>
+              <li><Link to="/contato" className="hover:text-white transition-colors">{settings.siteContent.contact.email}</Link></li>
               <li className="pt-4 border-t border-zinc-800/50 mt-4">
                 <span className="block text-xs text-zinc-500 mb-1">Horário de Atendimento:</span>
-                Seg. a Sex. das 09h às 18h
+                {settings.siteContent.contact.businessHours}
               </li>
             </ul>
           </div>

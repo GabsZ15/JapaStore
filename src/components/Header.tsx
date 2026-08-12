@@ -22,6 +22,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
   const { cartCount } = useCart();
   const { settings, updateSettings } = useSettings();
   const { user, signOut } = useAuth();
+  const texts = settings.siteContent.header;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,13 +61,13 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
             {/* Desktop Navigation & Search */}
             <div className="hidden md:flex flex-1 items-center justify-center px-8">
               <nav className="flex space-x-8 text-sm font-bold tracking-wide uppercase mr-8">
-                <Link to="/lancamentos" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
+                <Link to="/camisetas" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
                   <EditableText value={settings.navLink1} onSave={(v) => updateSettings({ ...settings, navLink1: v })} />
                 </Link>
-                <Link to="/roupas" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
+                <Link to="/bermudas" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
                   <EditableText value={settings.navLink2} onSave={(v) => updateSettings({ ...settings, navLink2: v })} />
                 </Link>
-                <Link to="/tenis" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
+                <Link to="/moletons" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
                   <EditableText value={settings.navLink3} onSave={(v) => updateSettings({ ...settings, navLink3: v })} />
                 </Link>
                 <Link to="/sale" className="text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors">
@@ -79,7 +80,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="O que você procura?"
+                  placeholder={texts.searchPlaceholder}
                   className="w-full bg-zinc-100 dark:bg-zinc-900 border-transparent rounded-full py-2 pl-4 pr-10 text-sm focus:bg-white dark:focus:bg-zinc-800 focus:border-zinc-300 dark:focus:border-zinc-700 focus:ring-0 transition-all outline-none border text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400"
                 />
                 <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
@@ -164,7 +165,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="O que você procura?"
+              placeholder={texts.searchPlaceholder}
               className="w-full bg-zinc-100 dark:bg-zinc-900 border-transparent rounded-lg py-3 pl-4 pr-10 text-sm focus:bg-white dark:focus:bg-zinc-800 focus:border-zinc-300 dark:focus:border-zinc-700 focus:ring-0 transition-all outline-none border text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400"
             />
             <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
@@ -176,21 +177,21 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="flex flex-col space-y-1 px-4">
             <Link 
-              to="/lancamentos" 
+              to="/camisetas" 
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
               {settings.navLink1 || 'Lançamentos'}
             </Link>
             <Link 
-              to="/roupas" 
+              to="/bermudas" 
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
               {settings.navLink2 || 'Roupas'}
             </Link>
             <Link 
-              to="/tenis" 
+              to="/moletons" 
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
@@ -220,7 +221,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
                   onClick={() => { closeMobileMenu(); signOut(); }}
                   className="flex items-center gap-3 text-red-600 dark:text-red-500 font-bold"
                 >
-                  <span className="text-sm uppercase tracking-wide">Sair da conta</span>
+                  <span className="text-sm uppercase tracking-wide">{texts.logoutText}</span>
                 </button>
               </div>
             ) : (
@@ -229,7 +230,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
                 className="flex items-center gap-3 text-zinc-900 dark:text-zinc-100 font-bold"
               >
                 <User className="h-5 w-5" />
-                <span className="text-sm uppercase tracking-wide">Entrar / Cadastrar</span>
+                <span className="text-sm uppercase tracking-wide">{texts.loginText}</span>
               </button>
             )}
             <Link 
@@ -239,7 +240,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
             >
               <div className="flex items-center gap-3">
                 <Heart className="h-5 w-5" />
-                <span className="text-sm uppercase tracking-wide">Meus Favoritos</span>
+                <span className="text-sm uppercase tracking-wide">{texts.favoritesText}</span>
               </div>
               {favorites.length > 0 && (
                 <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
@@ -252,7 +253,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
               className="flex items-center gap-3 text-zinc-900 dark:text-zinc-100 font-bold mt-2 pt-4 border-t border-zinc-200 dark:border-zinc-800"
             >
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              <span className="text-sm uppercase tracking-wide">{isDarkMode ? 'Modo Claro' : 'Modo Escuro'}</span>
+              <span className="text-sm uppercase tracking-wide">{isDarkMode ? texts.lightModeText : texts.darkModeText}</span>
             </button>
           </div>
         </div>

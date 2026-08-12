@@ -1,8 +1,11 @@
 import { useFavorites } from '../contexts/FavoritesContext';
 import { ProductCard } from '../components/ProductCard';
 import { Heart } from 'lucide-react';
+import { useSettings } from '../contexts/SettingsContext';
 
 export function FavoritosPage() {
+  const { settings } = useSettings();
+  const texts = settings.siteContent.favoritesPage;
   const { favorites } = useFavorites();
 
   return (
@@ -11,12 +14,8 @@ export function FavoritosPage() {
         <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-full mb-6 text-red-500">
           <Heart className="h-8 w-8 fill-current" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">
-          Seus Favoritos
-        </h1>
-        <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg max-w-xl">
-          Aqui estão os produtos que você marcou como favoritos.
-        </p>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">{texts.title}</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg max-w-xl">{texts.emptyStateTitle}</p>
       </div>
 
       {favorites.length > 0 ? (
@@ -26,9 +25,7 @@ export function FavoritosPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">
-          Você ainda não tem nenhum produto salvo nos favoritos.
-        </div>
+        <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">{texts.emptyStateText}</div>
       )}
     </main>
   );

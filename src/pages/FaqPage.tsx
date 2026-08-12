@@ -6,30 +6,13 @@ interface FaqItem {
   answer: string;
 }
 
-const faqs: FaqItem[] = [
-  {
-    question: 'Como funciona a política de trocas?',
-    answer: 'Você tem até 7 dias corridos após o recebimento do pedido para solicitar a troca ou devolução. O produto deve estar com a etiqueta original, sem indícios de uso e na embalagem original.'
-  },
-  {
-    question: 'Qual o prazo de entrega?',
-    answer: 'O prazo varia de acordo com a sua região e a modalidade de frete escolhida. Normalmente, pedidos para o Sudeste chegam em até 3 dias úteis, e para as demais regiões entre 5 a 10 dias úteis.'
-  },
-  {
-    question: 'Quais são as formas de pagamento?',
-    answer: 'Aceitamos PIX (com 5% de desconto), cartões de crédito (Visa, MasterCard, Elo) em até 12x.'
-  },
-  {
-    question: 'Como rastrear meu pedido?',
-    answer: 'Assim que o pedido for despachado, você receberá o código de rastreio por e-mail. Você também pode acompanhá-lo acessando sua conta na seção "Meus Pedidos".'
-  },
-  {
-    question: 'As peças encolhem ao lavar?',
-    answer: 'Nossas peças são pré-encolhidas no processo de fabricação. No entanto, recomendamos seguir rigorosamente as instruções de lavagem presentes na etiqueta de cada produto para garantir sua durabilidade.'
-  }
-];
+
+
+import { useSettings } from '../contexts/SettingsContext';
 
 export function FaqPage() {
+  const { settings } = useSettings();
+  const content = settings.siteContent.faq;
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleFaq = (index: number) => {
@@ -41,16 +24,14 @@ export function FaqPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">
-            Dúvidas Frequentes
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase mb-4 text-zinc-900 dark:text-white transition-colors duration-300">{content.title}</h1>
           <p className="text-zinc-500 dark:text-zinc-400 font-medium">
-            Tudo o que você precisa saber sobre compras, entregas e suporte.
+            {content.subtitle}
           </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {content.items.map((faq, index) => (
             <div 
               key={index} 
               className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-colors duration-300"

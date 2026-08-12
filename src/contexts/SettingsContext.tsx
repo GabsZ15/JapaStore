@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { SiteContent, defaultSiteContent } from '../types';
 
 export interface SiteSettings {
   topBarText: string;
@@ -11,6 +12,7 @@ export interface SiteSettings {
   navLink2: string;
   navLink3: string;
   navLink4: string;
+  siteContent: SiteContent;
 }
 
 const defaultSettings: SiteSettings = {
@@ -23,6 +25,7 @@ const defaultSettings: SiteSettings = {
   navLink2: "Roupas",
   navLink3: "Tênis",
   navLink4: "Sale",
+  siteContent: defaultSiteContent,
 };
 
 interface SettingsContextType {
@@ -55,6 +58,31 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       }
       
       if (data) {
+        let dbSiteContent = data.site_content;
+        if (!dbSiteContent) {
+          const localStr = localStorage.getItem('siteContent_fallback');
+          if (localStr) {
+            try {
+              dbSiteContent = JSON.parse(localStr);
+            } catch (e) {}
+          }
+        }
+        
+        
+        const mergedSiteContent = dbSiteContent ? { 
+          ...defaultSiteContent, 
+          ...dbSiteContent,
+          pages: {
+            ...defaultSiteContent.pages,
+            ...(dbSiteContent.pages || {})
+          },
+          homeCategories: {
+            ...defaultSiteContent.homeCategories,
+            ...(dbSiteContent.homeCategories || {})
+          }
+        } : defaultSiteContent;
+
+
         setSettings({
           topBarText: data.top_bar_text || defaultSettings.topBarText,
           heroTitle: data.hero_title || defaultSettings.heroTitle,
@@ -65,6 +93,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
           navLink2: data.nav_link2 || defaultSettings.navLink2,
           navLink3: data.nav_link3 || defaultSettings.navLink3,
           navLink4: data.nav_link4 || defaultSettings.navLink4,
+          siteContent: mergedSiteContent,
         });
       }
     } catch (err) {
@@ -89,15 +118,37 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
           nav_link2: newSettings.navLink2,
           nav_link3: newSettings.navLink3,
           nav_link4: newSettings.navLink4,
+          site_content: newSettings.siteContent,
           updated_at: new Date().toISOString(),
         });
-        
+      
       if (error) {
-        console.warn('Error updating settings:', error);
-        throw error;
+        if (error.code === '42703') {
+          console.warn('Column site_content missing in DB! Using localStorage as fallback.');
+          localStorage.setItem('siteContent_fallback', JSON.stringify(newSettings.siteContent));
+          const { error: fallbackError } = await supabase
+            .from('settings')
+            .upsert({
+              id: 1,
+              top_bar_text: newSettings.topBarText,
+              hero_title: newSettings.heroTitle,
+              hero_subtitle: newSettings.heroSubtitle,
+              carousel_title: newSettings.carouselTitle,
+              whatsapp_number: newSettings.whatsappNumber,
+              nav_link1: newSettings.navLink1,
+              nav_link2: newSettings.navLink2,
+              nav_link3: newSettings.navLink3,
+              nav_link4: newSettings.navLink4,
+              updated_at: new Date().toISOString(),
+            });
+          if (fallbackError) throw fallbackError;
+        } else {
+          throw error;
+        }
+      } else {
+        localStorage.removeItem('siteContent_fallback');
       }
 
-      // Update state only after successful database update
       setSettings(newSettings);
     } catch (err) {
       console.warn('Failed to update settings', err);

@@ -1,0 +1,53 @@
+import { ProductGrid } from '../components/ProductGrid';
+import { useSettings } from '../contexts/SettingsContext';
+import { EditableText } from '../components/EditableText';
+
+export function CamisetasPage() {
+  const { settings, updateSettings } = useSettings();
+  const content = settings.siteContent?.pages?.camisetas || { title: 'Camisetas', subtitle: '', gridTitle: 'Camisetas', ctaText: '' };
+
+  const handleUpdate = (field: string, value: string) => {
+    updateSettings({
+      ...settings,
+      siteContent: {
+        ...settings.siteContent,
+        pages: {
+          ...settings.siteContent.pages,
+          camisetas: {
+            ...content,
+            [field]: value
+          }
+        }
+      }
+    });
+  };
+
+  return (
+    <main className="min-h-screen flex flex-col">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8 flex flex-col items-center justify-center text-center">
+        <EditableText 
+          as="h1"
+          value={content.title}
+          onSave={(v) => handleUpdate('title', v)}
+          className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6 text-zinc-900 dark:text-white transition-colors duration-300"
+        />
+        <EditableText 
+          as="p"
+          value={content.subtitle}
+          onSave={(v) => handleUpdate('subtitle', v)}
+          className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto transition-colors duration-300"
+        />
+      </div>
+      
+      <ProductGrid 
+        title={content.gridTitle}
+        category="Camiseta"
+        onTitleChange={(v) => handleUpdate('gridTitle', v)}
+        linkText={content.ctaText}
+        onLinkTextChange={(v) => handleUpdate('ctaText', v)}
+        linkTo="/"
+        layout="grid"
+      />
+    </main>
+  );
+}

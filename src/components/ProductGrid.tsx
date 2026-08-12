@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { Product } from '../types';
+import { mapSupabaseProduct } from '../utils/productUtils';
 import { EditableText } from './EditableText';
 import { useSettings } from '../contexts/SettingsContext';
 import { supabase } from '../lib/supabase';
@@ -12,6 +13,7 @@ interface ProductGridProps {
   onTitleChange?: (newTitle: string) => void;
   category?: string;
   linkText?: string;
+  onLinkTextChange?: (newText: string) => void;
   linkTo?: string;
   layout?: 'grid' | 'carousel';
 }
@@ -22,6 +24,7 @@ export function ProductGrid({
   category, 
   linkText = "Ver tudo", 
   linkTo = "/lancamentos",
+  onLinkTextChange,
   layout = 'carousel'
 }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -45,17 +48,7 @@ export function ProductGrid({
 
       if (data) {
         // Map Supabase columns to Product type
-        const supabaseProducts: Product[] = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: Number(item.price),
-          installments: item.installments,
-          discount: item.discount,
-          category: item.category,
-          imageUrl: item.image_url,
-          outOfStock: item.out_of_stock,
-          description: item.description
-        }));
+        const supabaseProducts: Product[] = data.map(mapSupabaseProduct);
         
         let filteredProducts = supabaseProducts;
         if (category) {
@@ -146,9 +139,18 @@ export function ProductGrid({
       )}
       
       <div className="mt-4 flex justify-center">
-        <Link to={linkTo} className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
-          {linkText}
-        </Link>
+        {onLinkTextChange ? (
+          <EditableText 
+            as="span"
+            value={linkText}
+            onSave={onLinkTextChange}
+            className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors cursor-pointer"
+          />
+        ) : (
+          <Link to={linkTo} className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 underline underline-offset-4 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
+            {linkText}
+          </Link>
+        )}
       </div>
     </section>
   );

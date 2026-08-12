@@ -22,7 +22,11 @@ import { FaqPage } from './pages/FaqPage';
 import { ContatoPage } from './pages/ContatoPage';
 import { SearchPage } from './pages/SearchPage';
 import { FavoritosPage } from './pages/FavoritosPage';
+import { MoletonsPage } from './pages/MoletonsPage';
+import { CamisetasPage } from './pages/CamisetasPage';
+import { BermudasPage } from './pages/BermudasPage';
 import { AdminPage } from './pages/AdminPage';
+import { ProductPage } from './pages/ProductPage';
 
 // Contexts
 import { FavoritesProvider } from './contexts/FavoritesContext';
@@ -65,6 +69,10 @@ function StoreLayout({
           <Route path="/contato" element={<ContatoPage />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/favoritos" element={<FavoritosPage />} />
+          <Route path="/moletons" element={<MoletonsPage />} />
+          <Route path="/camisetas" element={<CamisetasPage />} />
+          <Route path="/bermudas" element={<BermudasPage />} />
+          <Route path="/produto/:id" element={<ProductPage />} />
         </Routes>
       </div>
 
