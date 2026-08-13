@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import { useEffect } from 'react';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -70,8 +73,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     setCheckoutStep('form');
   };
 
-  const goToReview = () => {
+  const goToReview = async () => {
     if (validateForm()) {
+      if (user) {
+        await supabase.auth.updateUser({ data: { address: formData } });
+      } else {
+        localStorage.setItem('deliveryAddress', JSON.stringify(formData));
+      }
       setCheckoutStep('review');
     }
   };
@@ -91,6 +99,25 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const { settings } = useSettings();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (isOpen) {
+      if (user && user.user_metadata?.address) {
+        setFormData(user.user_metadata.address);
+      } else if (!user) {
+        const saved = localStorage.getItem('deliveryAddress');
+        if (saved) {
+          try {
+            setFormData(JSON.parse(saved));
+          } catch (e) {}
+        }
+      } else if (user && !user.user_metadata?.address && user.user_metadata?.full_name) {
+        setFormData(prev => ({ ...prev, name: user.user_metadata.full_name }));
+      }
+    }
+  }, [isOpen, user]);
+
   const texts = settings.siteContent.cartDrawer;
 
   const formatCurrency = (value: number) => {
