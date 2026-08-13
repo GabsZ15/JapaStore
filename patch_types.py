@@ -3,9 +3,53 @@ import re
 with open('src/types.ts', 'r') as f:
     content = f.read()
 
-# Add sizes and extraImages to Product
-if "sizes?: string[];" not in content:
-    content = content.replace("outOfStock?: boolean;", "outOfStock?: boolean;\n  sizes?: string[];\n  extraImages?: string[];\n  selectedSize?: string;")
+target = """  homeCategories: {
+    items: [
+      {
+        id: "moletons",
+        title: "Moletons",
+        imageUrl: "/images/Moletom.jpeg",
+        linkTo: "/moletons"
+      },
+      {
+        id: "camisetas",
+        title: "Camisetas",
+        imageUrl: "/images/Camiseta.jpeg",
+        linkTo: "/camisetas"
+      },
+      {
+        id: "bermudas",
+        title: "Bermudas",
+        imageUrl: "/images/Bermuda.jpeg",
+        linkTo: "/bermudas"
+      }
+    ]
+  },"""
+
+replacement = """  homeCategories: {
+    items: [
+      {
+        id: "camisetas",
+        title: "Camisetas",
+        imageUrl: "/images/Camiseta.jpeg",
+        linkTo: "/camisetas"
+      },
+      {
+        id: "bermudas",
+        title: "Bermudas",
+        imageUrl: "/images/Bermuda.jpeg",
+        linkTo: "/bermudas"
+      },
+      {
+        id: "moletons",
+        title: "Moletons",
+        imageUrl: "/images/Moletom.jpeg",
+        linkTo: "/moletons"
+      }
+    ]
+  },"""
+
+content = content.replace(target, replacement)
 
 with open('src/types.ts', 'w') as f:
     f.write(content)

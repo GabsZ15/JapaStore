@@ -10,6 +10,7 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { AuthModal } from './components/AuthModal';
 import { CartDrawer } from './components/CartDrawer';
+import { ScrollToTop } from './components/ScrollToTop';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -82,7 +83,7 @@ function StoreLayout({
 }
 
 function StoreApp() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { isCartOpen, setIsCartOpen } = useCart();
 
@@ -99,6 +100,7 @@ function StoreApp() {
   return (
     <FavoritesProvider>
       <BrowserRouter>
+        <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-50 dark:selection:text-zinc-900 transition-colors duration-300">
         <Routes>
           <Route path="/admin" element={<AdminPage />} />

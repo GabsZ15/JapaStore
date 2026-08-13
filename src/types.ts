@@ -12,9 +12,17 @@ export interface Product {
   sizes?: string[];
   extraImages?: string[];
   selectedSize?: string;
+  weight?: number;
+  height?: number;
+  width?: number;
+  length?: number;
 }
 
 export interface SiteContent {
+  superfrete?: {
+    originCep: string;
+    token: string;
+  };
   pages: {
     lancamentos: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     roupas: { title: string; subtitle: string; gridTitle: string; ctaText: string };
@@ -118,6 +126,10 @@ export interface SiteContent {
 }
 
 export const defaultSiteContent: SiteContent = {
+  superfrete: {
+    originCep: '',
+    token: ''
+  },
   pages: {
     lancamentos: { title: "Lançamentos", subtitle: "Confira as novidades da Japastore. Novas coleções e peças exclusivas adicionadas recentemente.", gridTitle: "Últimos Lançamentos", ctaText: "Voltar ao início" },
     roupas: { title: "Roupas", subtitle: "Explore nossa linha completa de vestuário streetwear. Camisetas oversized, moletons, calças cargo e mais.", gridTitle: "Todas as Roupas", ctaText: "Ver lançamentos" },
@@ -130,12 +142,6 @@ export const defaultSiteContent: SiteContent = {
   homeCategories: {
     items: [
       {
-        id: "moletons",
-        title: "Moletons",
-        imageUrl: "/images/Moletom.jpeg",
-        linkTo: "/moletons"
-      },
-      {
         id: "camisetas",
         title: "Camisetas",
         imageUrl: "/images/Camiseta.jpeg",
@@ -146,6 +152,12 @@ export const defaultSiteContent: SiteContent = {
         title: "Bermudas",
         imageUrl: "/images/Bermuda.jpeg",
         linkTo: "/bermudas"
+      },
+      {
+        id: "moletons",
+        title: "Moletons",
+        imageUrl: "/images/Moletom.jpeg",
+        linkTo: "/moletons"
       }
     ]
   },

@@ -23,6 +23,8 @@ export function AdminPage() {
     setHeroSubtitle(settings.heroSubtitle);
     setCarouselTitle(settings.carouselTitle);
     setWhatsappNumber(settings.whatsappNumber || '5511999999999');
+    setSfCep(settings.siteContent?.superfrete?.originCep || '');
+    setSfToken(settings.siteContent?.superfrete?.token || '');
   }, [settings]);
 
   const [topBarText, setTopBarText] = useState(settings.topBarText);
@@ -30,6 +32,8 @@ export function AdminPage() {
   const [heroSubtitle, setHeroSubtitle] = useState(settings.heroSubtitle);
   const [carouselTitle, setCarouselTitle] = useState(settings.carouselTitle);
   const [whatsappNumber, setWhatsappNumber] = useState(settings.whatsappNumber || '');
+  const [sfCep, setSfCep] = useState(settings.siteContent?.superfrete?.originCep || '');
+  const [sfToken, setSfToken] = useState(settings.siteContent?.superfrete?.token || '');
 
   // Form State
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -42,6 +46,10 @@ export function AdminPage() {
   const [description, setDescription] = useState('');
   const [sizes, setSizes] = useState<string>('');
   const [extraImages, setExtraImages] = useState<string[]>([]);
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [width, setWidth] = useState('');
+  const [length, setLength] = useState('');
 
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
@@ -198,7 +206,13 @@ export function AdminPage() {
     
     const parsedSizes = sizes.split(',').map(s => s.trim()).filter(s => s !== '');
     const parsedExtraImages = extraImages;
-    const finalDescription = stringifyProductDescription(description, parsedSizes, parsedExtraImages);
+    const finalDescription = stringifyProductDescription(
+      description, parsedSizes, parsedExtraImages, 
+      weight ? parseFloat(weight.replace(',', '.')) : undefined,
+      height ? parseFloat(height.replace(',', '.')) : undefined,
+      width ? parseFloat(width.replace(',', '.')) : undefined,
+      length ? parseFloat(length.replace(',', '.')) : undefined
+    );
     
     try {
       if (editingId) {

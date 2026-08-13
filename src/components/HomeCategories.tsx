@@ -3,7 +3,16 @@ import { useSettings } from '../contexts/SettingsContext';
 
 export function HomeCategories() {
   const { settings } = useSettings();
-  const categories = settings?.siteContent?.homeCategories?.items || [];
+  const categoriesRaw = settings?.siteContent?.homeCategories?.items || [];
+  const order = ['camisetas', 'bermudas', 'moletons'];
+  const categories = [...categoriesRaw].sort((a, b) => {
+    const idxA = order.indexOf(a.id);
+    const idxB = order.indexOf(b.id);
+    if (idxA === -1 && idxB === -1) return 0;
+    if (idxA === -1) return 1;
+    if (idxB === -1) return -1;
+    return idxA - idxB;
+  });
 
   if (categories.length === 0) return null;
 

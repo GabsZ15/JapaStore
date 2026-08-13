@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Product } from '../types';
 import { mapSupabaseProduct } from '../utils/productUtils';
 import { useCart } from '../contexts/CartContext';
+import { ShippingCalculator } from '../components/ShippingCalculator';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { Heart, ChevronLeft, ShoppingBag } from 'lucide-react';
 import { TopBar } from '../components/TopBar';
@@ -206,6 +207,7 @@ export function ProductPage() {
               </div>
             )}
             
+            <ShippingCalculator product={product} />
           </div>
         </div>
       </div>
