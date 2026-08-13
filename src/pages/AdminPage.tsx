@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ContentEditor } from '../components/admin/ContentEditor';
-import { ArrowLeft, Edit, Trash2, Plus, Save, Store, UploadCloud, X, ImagePlus, Settings, ShoppingBag, Lock, LogIn, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, Plus, Save, Store, UploadCloud, X, ImagePlus, Settings, ShoppingBag, Lock, LogIn, Loader2, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 import { Product } from '../types';
 import { mapSupabaseProduct, stringifyProductDescription } from '../utils/productUtils';
 import { useSettings } from '../contexts/SettingsContext';
@@ -27,6 +27,8 @@ export function AdminPage() {
     setSfToken(settings.siteContent?.superfrete?.token || '');
   }, [settings]);
 
+  const [heroBanner1, setHeroBanner1] = useState(settings.siteContent?.heroBanners?.banner1 || '/images/japastorebanner1.jpeg');
+  const [heroBanner2, setHeroBanner2] = useState(settings.siteContent?.heroBanners?.banner2 || '/images/japastorebanner2.jpeg');
   const [topBarText, setTopBarText] = useState(settings.topBarText);
   const [heroTitle, setHeroTitle] = useState(settings.heroTitle);
   const [heroSubtitle, setHeroSubtitle] = useState(settings.heroSubtitle);
@@ -137,7 +139,7 @@ export function AdminPage() {
   const handleSaveSettings = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await updateSettings({
+      const newSettings = {
         topBarText,
         heroTitle,
         heroSubtitle,
@@ -147,8 +149,19 @@ export function AdminPage() {
         navLink2: settings.navLink2,
         navLink3: settings.navLink3,
         navLink4: settings.navLink4,
-        siteContent: settings.siteContent,
-      });
+        siteContent: {
+          ...settings.siteContent,
+          heroBanners: {
+            banner1: heroBanner1,
+            banner2: heroBanner2
+          },
+          superfrete: {
+            originCep: sfCep,
+            token: sfToken
+          }
+        },
+      };
+      await updateSettings(newSettings);
       alert('Configurações salvas com sucesso!');
     } catch (err) {
       alert('Erro ao salvar as configurações. Verifique o banco de dados.');
@@ -454,25 +467,55 @@ export function AdminPage() {
                 />
               </div>
               <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <h3 className="text-sm font-bold uppercase tracking-wide mb-4 text-zinc-500">Banner Principal (Hero)</h3>
+                <h3 className="text-sm font-bold uppercase tracking-wide mb-4 text-zinc-500">Imagens do Carrossel (Hero)</h3>
                 <div className="flex flex-col gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Título Principal</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Imagem 1 (URL ou Base64)</label>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => setHeroBanner1(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-2 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md mb-2"
+                    />
                     <input 
                       type="text" 
-                      value={heroTitle}
-                      onChange={e => setHeroTitle(e.target.value)}
+                      value={heroBanner1}
+                      onChange={e => setHeroBanner1(e.target.value)}
+                      placeholder="/images/japastorebanner1.jpeg"
                       className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md"
                     />
+                    {heroBanner1 && <img src={heroBanner1} alt="Banner 1" className="mt-2 h-20 w-auto rounded-md object-cover" />}
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Subtítulo</label>
-                    <textarea 
-                      rows={3}
-                      value={heroSubtitle}
-                      onChange={e => setHeroSubtitle(e.target.value)}
-                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md resize-none"
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Imagem 2 (URL ou Base64)</label>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => setHeroBanner2(reader.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-2 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md mb-2"
                     />
+                    <input 
+                      type="text" 
+                      value={heroBanner2}
+                      onChange={e => setHeroBanner2(e.target.value)}
+                      placeholder="/images/japastorebanner2.jpeg"
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md"
+                    />
+                    {heroBanner2 && <img src={heroBanner2} alt="Banner 2" className="mt-2 h-20 w-auto rounded-md object-cover" />}
                   </div>
                 </div>
               </div>
@@ -502,6 +545,33 @@ export function AdminPage() {
                   <p className="text-xs text-zinc-500 mt-2">Usado nos botões de compra. Formato: 55 + DDD + Número. Apenas números.</p>
                 </div>
               </div>
+
+              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <h3 className="text-sm font-bold uppercase tracking-wide mb-4 text-zinc-500 flex items-center gap-2"><Truck className="w-4 h-4" /> Integração SuperFrete</h3>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">CEP de Origem (Remetente)</label>
+                    <input 
+                      type="text" 
+                      value={sfCep} 
+                      onChange={(e) => setSfCep(e.target.value)} 
+                      placeholder="00000-000" 
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md" 
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Token (API Key)</label>
+                    <input 
+                      type="password" 
+                      value={sfToken} 
+                      onChange={(e) => setSfToken(e.target.value)} 
+                      placeholder="Deixe em branco para usar a env" 
+                      className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md" 
+                    />
+                  </div>
+                </div>
+              </div>
+
               <button 
                 type="submit" 
                 className="mt-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-xs py-4 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors rounded-md flex items-center justify-center gap-2"

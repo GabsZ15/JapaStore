@@ -16,8 +16,13 @@ async function startServer() {
   app.use(express.json());
 
   // Setup Supabase Client for backend
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+  let supabaseUrl = process.env.VITE_SUPABASE_URL || '';
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+
+  if (supabaseUrl === 'https://kqxluuxtnicsvwzmqjtk.supabase.co') {
+    supabaseUrl = 'https://kqxluxtynicsvwzmqjtk.supabase.co';
+  }
+
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   app.post('/api/shipping/calculate', async (req, res) => {

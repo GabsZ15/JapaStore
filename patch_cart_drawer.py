@@ -1,15 +1,14 @@
-import { X, ShoppingBag, Plus, Minus, Trash2, MessageCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext';
-import { useSettings } from '../contexts/SettingsContext';
+import re
 
-interface CartDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+with open('src/components/CartDrawer.tsx', 'r') as f:
+    content = f.read()
 
-export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+# Add useState import
+content = content.replace("import { Link }", "import { useState } from 'react';\nimport { Link }")
+content = content.replace("import { X, ShoppingBag, Plus, Minus, Trash2, MessageCircle } from 'lucide-react';", "import { X, ShoppingBag, Plus, Minus, Trash2, MessageCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';")
+
+# Add state variables inside CartDrawer
+state_code = """
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'form' | 'review'>('cart');
   const [formData, setFormData] = useState({
     name: '',
@@ -88,18 +87,33 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     setCheckoutStep('cart');
     onClose();
   };
+"""
 
-  const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
-  const { settings } = useSettings();
-  const texts = settings.siteContent.cartDrawer;
+target_start = "export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {"
+replacement_start = target_start + state_code
+content = content.replace(target_start, replacement_start)
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
+# Replace handleCheckout to use form data
+old_checkout = """
+  const handleCheckout = () => {
+    const phoneNumber = settings.whatsappNumber || '5511999999999';
+    
+    let message = texts.whatsappMessagePrefix;
+    
+    cartItems.forEach(item => {
+      const price = item.discount ? item.price * (1 - item.discount / 100) : item.price;
+      message += `${item.quantity}x ${item.name} ${item.selectedSize ? `(Tam: ${item.selectedSize})` : ''} - ${formatCurrency(price)}\n`;
+    });
+    
+    message += `${texts.whatsappMessageTotal} ${formatCurrency(cartTotal)}*`;
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Clear cart or not? Depends on preference. For now just redirect.
+    window.open(whatsappUrl, '_blank');
   };
-
+"""
+new_checkout = """
   const handleCheckout = () => {
     const phoneNumber = settings.whatsappNumber || '5511999999999';
     
@@ -125,95 +139,59 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     window.open(whatsappUrl, '_blank');
     handleClose();
   };
+"""
+content = content.replace(old_checkout, new_checkout)
 
-  return (
-    <>
-      {/* Overlay */}
-      <div 
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] transition-opacity duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-        onClick={handleClose}
-      />
-      
-      {/* Drawer */}
-      <div 
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white dark:bg-zinc-950 z-[101] shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
-        <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
-          <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">{texts.title}</h2>
-          <button 
+# Change overlay onClick
+content = content.replace("onClick={onClose}", "onClick={handleClose}")
+
+# Replace the Cart header X button onClick
+content = content.replace("""          <button 
+            onClick={onClose}
+            className="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>""", """          <button 
             onClick={handleClose}
             className="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
-          </button>
-        </div>
+          </button>""")
 
-        {cartItems.length === 0 ? (
-          <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center text-center">
-            <div className="bg-zinc-100 dark:bg-zinc-900 w-20 h-20 rounded-full flex items-center justify-center mb-6">
-              <ShoppingBag className="h-8 w-8 text-zinc-400 dark:text-zinc-500" />
-            </div>
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 uppercase tracking-wide">{texts.emptyStateTitle}</h3>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 max-w-[200px]">{texts.emptyStateText}</p>
-            <Link 
-              to="/camisetas"
-              onClick={handleClose}
-              className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-xs px-8 py-4 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
-            >{texts.startShoppingButton}</Link>
-          </div>
-        ) : checkoutStep === 'cart' ? (
+# Now replace the rendering logic
+# We need to conditionally render step cart, form, or review
+old_empty_state = """        {cartItems.length === 0 ? ("""
+
+new_render = """        {cartItems.length === 0 ? ("""
+content = content.replace(old_empty_state, new_render)
+
+# Find the start of the `) : (` for the cart items render
+cart_items_start = """        ) : (
           <>
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-              {cartItems.map((item) => (
-                <div key={`${item.id}-${item.selectedSize || ''}`} className="flex gap-4">
-                  <div className="w-20 h-24 bg-zinc-100 dark:bg-zinc-900 flex-shrink-0">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name} 
-                      className="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal"
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between py-1">
-                    <div>
-                      <div className="flex justify-between items-start gap-2">
-                        <h4 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-tight line-clamp-2">
-                          {item.name} {item.selectedSize ? `(Tam: ${item.selectedSize})` : ''}
-                        </h4>
-                        <button onClick={() => removeFromCart(item.id, item.selectedSize)} className="text-zinc-400 hover:text-red-500 transition-colors">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div className="mt-1">
-                        <span className="text-sm font-medium text-zinc-900 dark:text-white">
-                          {formatCurrency(item.discount ? item.price * (1 - item.discount / 100) : item.price)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center border border-zinc-200 dark:border-zinc-700 rounded-sm">
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
-                          className="px-2 py-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="px-2 py-1 text-xs font-bold text-zinc-900 dark:text-white min-w-[2rem] text-center">
-                          {item.quantity}
-                        </span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
-                          className="px-2 py-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">"""
+cart_items_replacement = """        ) : checkoutStep === 'cart' ? (
+          <>
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">"""
+content = content.replace(cart_items_start, cart_items_replacement)
+
+# Find the checkout button section
+checkout_btn_start = """            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">{texts.totalText}</span>
+                <span className="text-lg font-black text-zinc-900 dark:text-white">{formatCurrency(cartTotal)}</span>
+              </div>
+              <button 
+                onClick={handleCheckout}
+                className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold uppercase tracking-wider text-sm py-4 transition-colors"
+              >
+                <MessageCircle className="h-5 w-5" />
+                {texts.checkoutButton}
+              </button>
             </div>
-            
-            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
+          </>
+        )}"""
+
+checkout_btn_replacement = """            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">{texts.totalText}</span>
                 <span className="text-lg font-black text-zinc-900 dark:text-white">{formatCurrency(cartTotal)}</span>
@@ -227,8 +205,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
           </>
         ) : checkoutStep === 'form' ? (
-          <div className="flex-1 flex flex-col h-full">
-            <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
+          <div className="flex-1 flex flex-col">
+            <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
               <button onClick={goBackToCart} className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
                 <ArrowLeft className="h-5 w-5" />
               </button>
@@ -244,23 +222,21 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 />
                 {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">CPF</label>
-                  <input 
-                    type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} placeholder="000.000.000-00"
-                    className={`w-full p-3 bg-zinc-50 dark:bg-zinc-900 border ${formErrors.cpf ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors rounded-sm text-sm dark:text-white`} 
-                  />
-                  {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf}</p>}
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">CEP</label>
-                  <input 
-                    type="text" name="cep" value={formData.cep} onChange={handleInputChange} placeholder="00000-000"
-                    className={`w-full p-3 bg-zinc-50 dark:bg-zinc-900 border ${formErrors.cep ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors rounded-sm text-sm dark:text-white`} 
-                  />
-                  {formErrors.cep && <p className="text-red-500 text-xs mt-1">{formErrors.cep}</p>}
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">CPF</label>
+                <input 
+                  type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} placeholder="000.000.000-00"
+                  className={`w-full p-3 bg-zinc-50 dark:bg-zinc-900 border ${formErrors.cpf ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors rounded-sm text-sm dark:text-white`} 
+                />
+                {formErrors.cpf && <p className="text-red-500 text-xs mt-1">{formErrors.cpf}</p>}
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">CEP</label>
+                <input 
+                  type="text" name="cep" value={formData.cep} onChange={handleInputChange} placeholder="00000-000"
+                  className={`w-full p-3 bg-zinc-50 dark:bg-zinc-900 border ${formErrors.cep ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'} focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors rounded-sm text-sm dark:text-white`} 
+                />
+                {formErrors.cep && <p className="text-red-500 text-xs mt-1">{formErrors.cep}</p>}
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">Rua</label>
@@ -270,8 +246,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 />
                 {formErrors.street && <p className="text-red-500 text-xs mt-1">{formErrors.street}</p>}
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="w-full sm:w-1/3">
+              <div className="flex gap-4">
+                <div className="w-1/3">
                   <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">Número</label>
                   <input 
                     type="text" name="number" value={formData.number} onChange={handleInputChange} 
@@ -279,7 +255,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   />
                   {formErrors.number && <p className="text-red-500 text-xs mt-1">{formErrors.number}</p>}
                 </div>
-                <div className="w-full sm:flex-1">
+                <div className="flex-1">
                   <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white mb-2">Bairro</label>
                   <input 
                     type="text" name="neighborhood" value={formData.neighborhood} onChange={handleInputChange} 
@@ -298,7 +274,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </div>
             </div>
             
-            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
+            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
               <button 
                 onClick={goToReview}
                 className="w-full flex items-center justify-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold uppercase tracking-wider text-sm py-4 transition-colors"
@@ -308,8 +284,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col h-full">
-            <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
+          <div className="flex-1 flex flex-col">
+            <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
               <button onClick={goBackToForm} className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
                 <ArrowLeft className="h-5 w-5" />
               </button>
@@ -347,7 +323,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </div>
             </div>
             
-            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
+            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
               <button 
                 onClick={handleCheckout}
                 className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold uppercase tracking-wider text-sm py-4 transition-colors"
@@ -357,8 +333,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </button>
             </div>
           </div>
-        )}
-      </div>
-    </>
-  );
-}
+        )}"""
+
+content = content.replace(checkout_btn_start, checkout_btn_replacement)
+
+with open('src/components/CartDrawer.tsx', 'w') as f:
+    f.write(content)

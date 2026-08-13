@@ -60,6 +60,10 @@ export interface SiteContent {
     addressLine1: string;
     addressLine2: string;
   };
+  heroBanners: {
+    banner1: string;
+    banner2: string;
+  };
   footer: {
     aboutText: string;
   };
@@ -190,6 +194,10 @@ export const defaultSiteContent: SiteContent = {
     businessHours: "Segunda a Sexta, das 09h às 18h",
     addressLine1: "Av. Paulista, 1000 - Bela Vista",
     addressLine2: "São Paulo - SP, 01310-100"
+  },
+  heroBanners: {
+    banner1: '/images/japastorebanner1.jpeg',
+    banner2: '/images/japastorebanner2.jpeg'
   },
   footer: {
     aboutText: "Streetwear e moda casual para quem busca atitude e minimalismo. O melhor do design contemporâneo focado em qualidade e exclusividade."

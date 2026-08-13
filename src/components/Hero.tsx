@@ -1,43 +1,53 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
-import { EditableText } from './EditableText';
 
 export function Hero() {
-  const { settings, updateSettings } = useSettings();
-  
+  const { settings } = useSettings();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // We fall back to the default paths if they are somehow missing
+  const banner1 = settings.siteContent?.heroBanners?.banner1 || '/images/japastorebanner1.jpeg';
+  const banner2 = settings.siteContent?.heroBanners?.banner2 || '/images/japastorebanner2.jpeg';
+  const images = [banner1, banner2];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 5000); // 5 seconds per slide
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
-    <section className="relative h-[70vh] bg-zinc-900 flex items-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1523398002811-999aa8e9f5b9?auto=format&fit=crop&q=80" 
-          alt="Coleção" 
-          className="w-full h-full object-cover opacity-60 dark:opacity-40 transition-opacity duration-300"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent dark:from-black/80"></div>
-      </div>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center md:text-left">
-        <EditableText 
-          as="h1"
-          value={settings.heroTitle}
-          onSave={(newValue) => updateSettings({ ...settings, heroTitle: newValue })}
-          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter uppercase max-w-3xl leading-tight inline-block"
-        />
-        <div className="mt-6">
-          <EditableText 
-            as="p"
-            value={settings.heroSubtitle}
-            onSave={(newValue) => updateSettings({ ...settings, heroSubtitle: newValue })}
-            className="text-lg text-zinc-200 dark:text-zinc-300 max-w-xl md:mx-0 mx-auto font-medium"
+    <section className="relative w-full overflow-hidden bg-zinc-900">
+      {/* Placeholder invisível para ditar a altura do container mantendo o aspect ratio original da imagem */}
+      <img src={images[0]} alt="" aria-hidden="true" className="w-full h-auto invisible block pointer-events-none" />
+      {images.map((img, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        >
+          <img
+            src={img}
+            alt={`Banner ${index + 1}`}
+            className="w-full h-full object-cover"
           />
         </div>
-        <div className="mt-10">
-          <Link 
-            to="/camisetas" 
-            className="inline-block bg-white dark:bg-zinc-100 text-black px-6 py-3 sm:px-10 sm:py-4 font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-zinc-200 dark:hover:bg-white transition-colors"
-          >
-            Comprar Agora
-          </Link>
-        </div>
+      ))}
+      
+      {/* Dots for navigation */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentIndex ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/80'
+            }`}
+            aria-label={`Ir para o slide ${index + 1}`}
+          />
+        ))}
       </div>
     </section>
   );
