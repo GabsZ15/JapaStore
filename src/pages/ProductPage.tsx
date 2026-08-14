@@ -18,7 +18,7 @@ export function ProductPage() {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [activeImage, setActiveImage] = useState<string>('');
   
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
@@ -82,6 +82,7 @@ export function ProductPage() {
       ...product,
       selectedSize: selectedSize || undefined
     });
+    setIsCartOpen(true);
   };
 
   return (

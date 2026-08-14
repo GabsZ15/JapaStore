@@ -147,7 +147,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     
     message += `${texts.whatsappMessageTotal} ${formatCurrency(cartTotal)}*`;
     
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
     handleClose();

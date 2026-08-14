@@ -189,7 +189,7 @@ export const defaultSiteContent: SiteContent = {
   contact: {
     title: "Fale Conosco",
     subtitle: "Estamos aqui para ajudar. Preencha o formulário ou utilize nossos canais de atendimento.",
-    email: "contato@japastore.com.br",
+    email: "Japastore171@gmail.com",
     phone: "(11) 99999-9999",
     businessHours: "Segunda a Sexta, das 09h às 18h",
     addressLine1: "Av. Paulista, 1000 - Bela Vista",

@@ -25,7 +25,7 @@ export function ContatoPage() {
             </h3>
             
             <div className="space-y-8">
-              <div className="flex items-start gap-4">
+              <a href={`mailto:${content.email}`} className="flex items-start gap-4 hover:opacity-80 transition-opacity">
                 <div className="bg-white dark:bg-zinc-900 p-3 shadow-sm border border-zinc-100 dark:border-zinc-800">
                   <Mail className="h-5 w-5 text-zinc-900 dark:text-white" />
                 </div>
@@ -34,18 +34,18 @@ export function ContatoPage() {
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.email}</p>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Resposta em até 24h úteis</p>
                 </div>
-              </div>
+              </a>
 
-              <div className="flex items-start gap-4">
+              <a href={`https://wa.me/${settings.whatsappNumber?.replace(/\D/g, '') || '5511999999999'}`} target="_blank" rel="noreferrer" className="flex items-start gap-4 hover:opacity-80 transition-opacity">
                 <div className="bg-white dark:bg-zinc-900 p-3 shadow-sm border border-zinc-100 dark:border-zinc-800">
                   <Phone className="h-5 w-5 text-zinc-900 dark:text-white" />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm uppercase tracking-wider text-zinc-900 dark:text-white mb-1">WhatsApp / Telefone</h4>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{content.phone}</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">{settings.whatsappNumber || content.phone}</p>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">{content.businessHours}</p>
                 </div>
-              </div>
+              </a>
 
               <div className="flex items-start gap-4">
                 <div className="bg-white dark:bg-zinc-900 p-3 shadow-sm border border-zinc-100 dark:border-zinc-800">
@@ -103,9 +103,13 @@ export function ContatoPage() {
 
               <button 
                 type="button"
+                onClick={() => {
+                  const text = 'Olá! Gostaria de falar com o atendimento.';
+                  window.open(`https://wa.me/${settings.whatsappNumber?.replace(/\D/g, '') || '5511999999999'}?text=${encodeURIComponent(text)}`, '_blank');
+                }}
                 className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold uppercase tracking-wider text-sm py-4 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
               >
-                Enviar Mensagem
+                Enviar Mensagem via WhatsApp
               </button>
             </form>
           </div>

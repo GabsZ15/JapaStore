@@ -66,8 +66,8 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-6">Contato</h4>
             <ul className="space-y-4 text-sm font-medium">
-              <li><Link to="/contato" className="hover:text-white transition-colors">Atendimento via WhatsApp</Link></li>
-              <li><Link to="/contato" className="hover:text-white transition-colors">{settings.siteContent.contact.email}</Link></li>
+              <li><a href={`https://wa.me/${settings.whatsappNumber?.replace(/\D/g, '') || '5511999999999'}`} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Atendimento via WhatsApp</a></li>
+              <li><a href={`mailto:${settings.siteContent.contact.email}`} className="hover:text-white transition-colors">{settings.siteContent.contact.email}</a></li>
               <li className="pt-4 border-t border-zinc-800/50 mt-4">
                 <span className="block text-xs text-zinc-500 mb-1">Horário de Atendimento:</span>
                 {settings.siteContent.contact.businessHours}
