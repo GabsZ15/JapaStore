@@ -27,7 +27,7 @@ export interface SiteContent {
     lancamentos: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     roupas: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     tenis: { title: string; subtitle: string; gridTitle: string; ctaText: string };
-    sale: { title: string; subtitle: string; gridTitle: string; ctaText: string };
+    acessorios: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     moletons: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     camisetas: { title: string; subtitle: string; gridTitle: string; ctaText: string };
     bermudas: { title: string; subtitle: string; gridTitle: string; ctaText: string };
@@ -137,8 +137,8 @@ export const defaultSiteContent: SiteContent = {
   pages: {
     lancamentos: { title: "Lançamentos", subtitle: "Confira as novidades da Japastore. Novas coleções e peças exclusivas adicionadas recentemente.", gridTitle: "Últimos Lançamentos", ctaText: "Voltar ao início" },
     roupas: { title: "Roupas", subtitle: "Explore nossa linha completa de vestuário streetwear. Camisetas oversized, moletons, calças cargo e mais.", gridTitle: "Todas as Roupas", ctaText: "Ver lançamentos" },
-    tenis: { title: "Tênis", subtitle: "Os melhores sneakers para complementar o seu visual streetwear. Modelos exclusivos e confortáveis.", gridTitle: "Sneakers Exclusivos", ctaText: "Ir para sale" },
-    sale: { title: "Sale", subtitle: "Aproveite nossos descontos imperdíveis. Peças selecionadas com descontos.", gridTitle: "Ofertas Ativas", ctaText: "Ver novidades" },
+    tenis: { title: "Tênis", subtitle: "Os melhores sneakers para complementar o seu visual streetwear. Modelos exclusivos e confortáveis.", gridTitle: "Sneakers Exclusivos", ctaText: "Ir para acessórios" },
+    acessorios: { title: "Acessórios", subtitle: "Complete seu visual com nossos acessórios exclusivos.", gridTitle: "Acessórios", ctaText: "Ver novidades" },
     moletons: { title: "Moletons", subtitle: "Conforto e estilo para os dias mais frios. Moletons pesados e com caimento perfeito.", gridTitle: "Moletons", ctaText: "Voltar ao início" },
     camisetas: { title: "Camisetas", subtitle: "Camisetas com as melhores estampas e qualidade premium.", gridTitle: "Camisetas", ctaText: "Voltar ao início" },
     bermudas: { title: "Bermudas", subtitle: "Bermudas para o seu dia a dia com conforto streetwear.", gridTitle: "Bermudas", ctaText: "Voltar ao início" }

@@ -50,11 +50,11 @@ async function startServer() {
       const originCep = superfreteConfig.originCep;
       const dbToken = superfreteConfig.token;
 
-      // Token in .env has priority, fallback to DB
-      const apiToken = process.env.SUPERFRETE_TOKEN || dbToken;
+      // Use the token configured in the Admin panel (saved in Supabase)
+      const apiToken = dbToken;
 
       if (!apiToken) {
-        return res.status(500).json({ error: 'Token da SuperFrete não configurado no painel ou no ambiente.' });
+        return res.status(500).json({ error: 'Token da SuperFrete não configurado no painel Admin.' });
       }
       if (!originCep) {
         return res.status(500).json({ error: 'CEP de origem não configurado no painel Admin.' });

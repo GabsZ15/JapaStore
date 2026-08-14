@@ -627,10 +627,13 @@ export function AdminPage() {
                     className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white transition-colors dark:text-white rounded-md appearance-none"
                   >
                     <option value="" disabled>Selecione</option>
-                    <option value="Tenis">Tênis</option>
-                    <option value="Roupas">Roupas</option>
+                    <option value="Camiseta">Camisetas</option>
+                    <option value="Bermuda">Bermudas</option>
+                    <option value="Moletom">Moletons</option>
                     <option value="Acessorios">Acessórios</option>
-                    <option value="Sale">Sale</option>
+                    {category && !['Camiseta', 'Bermuda', 'Moletom', 'Acessorios'].includes(category) && (
+                      <option value={category}>{category} (Antigo)</option>
+                    )}
                   </select>
                 </div>
               </div>

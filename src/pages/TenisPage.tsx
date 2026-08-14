@@ -29,7 +29,7 @@ export function TenisPage() {
         <EditableText as="h1" value={content.title} onSave={(v) => handleUpdate('title', v)} className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-6 text-zinc-900 dark:text-white transition-colors duration-300" />
         <EditableText as="p" value={content.subtitle} onSave={(v) => handleUpdate('subtitle', v)} className="text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto transition-colors duration-300" />
       </div>
-      <ProductGrid title={content.gridTitle} onTitleChange={(v) => handleUpdate('gridTitle', v)} category="Tenis" linkText={content.ctaText} onLinkTextChange={(v) => handleUpdate('ctaText', v)} linkTo="/sale" layout="grid" />
+      <ProductGrid title={content.gridTitle} onTitleChange={(v) => handleUpdate('gridTitle', v)} category="Tenis" linkText={content.ctaText} onLinkTextChange={(v) => handleUpdate('ctaText', v)} linkTo="/acessorios" layout="grid" />
     </main>
   );
 }

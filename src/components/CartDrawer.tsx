@@ -163,7 +163,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       
       {/* Drawer */}
       <div 
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white dark:bg-zinc-950 z-[101] shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-[100dvh] w-full max-w-md bg-white dark:bg-zinc-950 z-[101] shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
           <h2 className="text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-white">{texts.title}</h2>
@@ -254,7 +254,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
           </>
         ) : checkoutStep === 'form' ? (
-          <div className="flex-1 flex flex-col h-full">
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
               <button onClick={goBackToCart} className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
                 <ArrowLeft className="h-5 w-5" />
@@ -335,7 +335,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col h-full">
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center gap-3 p-6 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shrink-0">
               <button onClick={goBackToForm} className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
                 <ArrowLeft className="h-5 w-5" />

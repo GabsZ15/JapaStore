@@ -41,6 +41,11 @@ export function ShippingCalculator({ product }: { product: Product }) {
         }),
       });
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error('Serviço de frete indisponível no momento. Tente novamente mais tarde.');
+      }
+
       const data = await response.json();
 
       if (!response.ok) {

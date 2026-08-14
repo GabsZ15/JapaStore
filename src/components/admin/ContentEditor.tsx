@@ -239,26 +239,26 @@ export function ContentEditor() {
           </div>
         )}
 
-        {/* Sale */}
-        <SectionHeader id="sale" title="Página: Sale" />
-        {expandedSection === 'sale' && (
+        {/* Acessórios */}
+        <SectionHeader id="acessorios" title="Página: Acessórios" />
+        {expandedSection === 'acessorios' && (
           <div className="p-6 space-y-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Título Principal</label>
-              <input type="text" value={content.pages.sale.title} onChange={e => updatePage('sale', 'title', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
+              <input type="text" value={content.pages.acessorios.title} onChange={e => updatePage('acessorios', 'title', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
             </div>
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Subtítulo</label>
-              <textarea value={content.pages.sale.subtitle} onChange={e => updatePage('sale', 'subtitle', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" rows={2} />
+              <textarea value={content.pages.acessorios.subtitle} onChange={e => updatePage('acessorios', 'subtitle', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" rows={2} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Título do Grid</label>
-                <input type="text" value={content.pages.sale.gridTitle} onChange={e => updatePage('sale', 'gridTitle', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
+                <input type="text" value={content.pages.acessorios.gridTitle} onChange={e => updatePage('acessorios', 'gridTitle', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-2">Texto do Botão (CTA)</label>
-                <input type="text" value={content.pages.sale.ctaText} onChange={e => updatePage('sale', 'ctaText', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
+                <input type="text" value={content.pages.acessorios.ctaText} onChange={e => updatePage('acessorios', 'ctaText', e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-3 text-sm focus:outline-none transition-colors dark:text-white rounded-md" />
               </div>
             </div>
           </div>

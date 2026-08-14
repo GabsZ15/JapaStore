@@ -52,11 +52,11 @@ export function ProductGrid({
         
         let filteredProducts = supabaseProducts;
         if (category) {
-          if (category.toLowerCase() === 'sale') {
-            filteredProducts = supabaseProducts.filter(p => p.discount);
-          } else {
-            filteredProducts = supabaseProducts.filter(p => p.category?.toLowerCase() === category.toLowerCase() || p.category?.toLowerCase() === 'acessorios');
-          }
+          filteredProducts = supabaseProducts.filter(p => {
+            const prodCat = p.category?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const targetCat = category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            return prodCat === targetCat;
+          });
         }
         
         setProducts(filteredProducts);

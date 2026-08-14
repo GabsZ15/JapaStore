@@ -17,7 +17,7 @@ import { HomePage } from './pages/HomePage';
 import { LancamentosPage } from './pages/LancamentosPage';
 import { RoupasPage } from './pages/RoupasPage';
 import { TenisPage } from './pages/TenisPage';
-import { SalePage } from './pages/SalePage';
+import { AcessoriosPage } from './pages/AcessoriosPage';
 import { SobrePage } from './pages/SobrePage';
 import { FaqPage } from './pages/FaqPage';
 import { ContatoPage } from './pages/ContatoPage';
@@ -64,7 +64,7 @@ function StoreLayout({
           <Route path="/lancamentos" element={<LancamentosPage />} />
           <Route path="/roupas" element={<RoupasPage />} />
           <Route path="/tenis" element={<TenisPage />} />
-          <Route path="/sale" element={<SalePage />} />
+          <Route path="/acessorios" element={<AcessoriosPage />} />
           <Route path="/sobre" element={<SobrePage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contato" element={<ContatoPage />} />

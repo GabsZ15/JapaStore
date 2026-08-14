@@ -70,7 +70,7 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
                 <Link to="/moletons" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
                   <EditableText value={settings.navLink3} onSave={(v) => updateSettings({ ...settings, navLink3: v })} />
                 </Link>
-                <Link to="/sale" className="text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors">
+                <Link to="/acessorios" className="text-zinc-900 dark:text-zinc-100 hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors">
                   <EditableText value={settings.navLink4} onSave={(v) => updateSettings({ ...settings, navLink4: v })} />
                 </Link>
               </nav>
@@ -181,28 +181,28 @@ export function Header({ toggleTheme, isDarkMode, onOpenAuth, onOpenCart }: Head
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
-              {settings.navLink1 || 'Lançamentos'}
+              {settings.navLink1 || 'Camisetas'}
             </Link>
             <Link 
               to="/bermudas" 
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
-              {settings.navLink2 || 'Roupas'}
+              {settings.navLink2 || 'Bermudas'}
             </Link>
             <Link 
               to="/moletons" 
               onClick={closeMobileMenu}
               className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
-              {settings.navLink3 || 'Tênis'}
+              {settings.navLink3 || 'Moletons'}
             </Link>
             <Link 
-              to="/sale" 
+              to="/acessorios" 
               onClick={closeMobileMenu}
-              className="py-3 text-sm font-bold tracking-wide uppercase text-red-600 dark:text-red-500 border-b border-zinc-100 dark:border-zinc-900"
+              className="py-3 text-sm font-bold tracking-wide uppercase text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900"
             >
-              {settings.navLink4 || 'Sale'}
+              {settings.navLink4 || 'Acessórios'}
             </Link>
           </nav>
         </div>

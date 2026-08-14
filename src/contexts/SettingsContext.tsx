@@ -21,10 +21,10 @@ const defaultSettings: SiteSettings = {
   heroSubtitle: "O futuro do streetwear já chegou. Peças exclusivas com design minimalista e conforto máximo para o seu dia a dia.",
   carouselTitle: "Camisetas Para Todos os Momentos",
   whatsappNumber: "5511999999999",
-  navLink1: "Lançamentos",
-  navLink2: "Roupas",
-  navLink3: "Tênis",
-  navLink4: "Sale",
+  navLink1: "Camisetas",
+  navLink2: "Bermudas",
+  navLink3: "Moletons",
+  navLink4: "Acessórios",
   siteContent: defaultSiteContent,
 };
 
