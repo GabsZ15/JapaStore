@@ -7,9 +7,9 @@ export interface CartItem extends Product {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: string, selectedSize?: string) => void;
-  updateQuantity: (productId: string, selectedSize: string | undefined, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (productId: string, selectedSize?: string, selectedColor?: string) => void;
+  updateQuantity: (productId: string, selectedSize: string | undefined, selectedColor: string | undefined, quantity: number) => void;
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
@@ -37,31 +37,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('@JapaStore:cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, quantity: number = 1) => {
     setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id && item.selectedSize === product.selectedSize);
+      const existing = prev.find((item) => item.id === product.id && item.selectedSize === product.selectedSize && item.selectedColor === product.selectedColor);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id && item.selectedSize === product.selectedSize ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id && item.selectedSize === product.selectedSize && item.selectedColor === product.selectedColor ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity }];
     });
   };
 
-  const removeFromCart = (productId: string, selectedSize?: string) => {
-    setCartItems((prev) => prev.filter((item) => !(item.id === productId && item.selectedSize === selectedSize)));
+  const removeFromCart = (productId: string, selectedSize?: string, selectedColor?: string) => {
+    setCartItems((prev) => prev.filter((item) => !(item.id === productId && item.selectedSize === selectedSize && item.selectedColor === selectedColor)));
   };
 
-  const updateQuantity = (productId: string, selectedSize: string | undefined, quantity: number) => {
+  const updateQuantity = (productId: string, selectedSize: string | undefined, selectedColor: string | undefined, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId, selectedSize);
+      removeFromCart(productId, selectedSize, selectedColor);
       return;
     }
     setCartItems((prev) =>
-      prev.map((item) =>
-        (item.id === productId && item.selectedSize === selectedSize) ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        if (item.id === productId && item.selectedSize === selectedSize && item.selectedColor === selectedColor) {
+           let maxStock = 999;
+           if (item.variants && item.variants.length > 0 && selectedColor && selectedSize) {
+              const activeVariant = item.variants.find(v => v.color === selectedColor);
+              if (activeVariant) {
+                 const sizeObj = activeVariant.sizes.find(s => s.name === selectedSize);
+                 if (sizeObj) maxStock = sizeObj.stock;
+              }
+           }
+           const finalQty = Math.min(quantity, maxStock);
+           return { ...item, quantity: finalQty };
+        }
+        return item;
+      })
     );
   };
 
@@ -70,8 +82,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const cartTotal = cartItems.reduce((total, item) => {
-    // If product has discount, we should ideally use discounted price, but let's stick to base price for now or calculate if needed.
-    // Assuming price is the final price for simplicity, or we can apply discount if it exists.
     const itemPrice = item.discount 
       ? item.price * (1 - item.discount / 100) 
       : item.price;

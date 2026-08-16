@@ -18,7 +18,7 @@ export function Footer() {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') {
+    if (password === 'ni140410') {
       enableAdminMode();
       setShowPrompt(false);
       setPassword('');
@@ -32,7 +32,7 @@ export function Footer() {
     <>
       <footer className="bg-zinc-950 dark:bg-black text-zinc-300 py-10 md:py-16 border-t border-zinc-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-8 md:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 mb-8 md:mb-12">
           
           <div className="md:col-span-1">
             <Link to="/" className="flex flex-col items-start mb-6">
@@ -41,26 +41,6 @@ export function Footer() {
             <p className="text-sm text-zinc-400 mb-6 max-w-xs leading-relaxed">
               {settings.siteContent.footer.aboutText}
             </p>
-          </div>
-
-          <div>
-            <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-6">Institucional</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><Link to="/sobre" className="hover:text-white transition-colors">Sobre a Marca</Link></li>
-              <li><Link to="/faq" className="hover:text-white transition-colors">Dúvidas Frequentes</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Trabalhe Conosco</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-6">Ajuda</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li><Link to="/faq" className="hover:text-white transition-colors">Trocas e Devoluções</Link></li>
-              <li><Link to="/faq" className="hover:text-white transition-colors">Prazos de Entrega</Link></li>
-              <li><Link to="/contato" className="hover:text-white transition-colors">Fale Conosco</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Rastrear Pedido</a></li>
-            </ul>
           </div>
 
           <div>

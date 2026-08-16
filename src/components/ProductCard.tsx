@@ -25,7 +25,8 @@ export function ProductCard({ product }: ProductCardProps) {
     }).format(value);
   };
 
-  const installmentValue = product.price / product.installments;
+  const finalPrice = product.discount ? product.price * (1 - product.discount / 100) : product.price;
+  const installmentValue = finalPrice / product.installments;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,6 +43,8 @@ export function ProductCard({ product }: ProductCardProps) {
         <img 
           src={product.imageUrl} 
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           className={`w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out mix-blend-multiply dark:mix-blend-normal ${product.outOfStock ? 'opacity-50 grayscale' : ''}`}
         />
         
@@ -67,13 +70,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </h3>
         
         <div className="flex items-center gap-2 mb-1">
-          {product.originalPrice && (
+          {product.discount && (
             <span className="text-xs text-zinc-500 dark:text-zinc-400 line-through transition-colors duration-300">
-              {formatCurrency(product.originalPrice)}
+              {formatCurrency(product.price)}
             </span>
           )}
           <span className="text-base font-black text-zinc-900 dark:text-white transition-colors duration-300">
-            {formatCurrency(product.price)}
+            {formatCurrency(finalPrice)}
           </span>
         </div>
         

@@ -1,3 +1,13 @@
+export interface ProductVariantSize {
+  name: string;
+  stock: number;
+}
+
+export interface ProductVariant {
+  color: string;
+  sizes: ProductVariantSize[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -10,8 +20,11 @@ export interface Product {
   description?: string;
   outOfStock?: boolean;
   sizes?: string[];
+  colors?: string[];
   extraImages?: string[];
   selectedSize?: string;
+  selectedColor?: string;
+  variants?: ProductVariant[];
   weight?: number;
   height?: number;
   width?: number;

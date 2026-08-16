@@ -14,7 +14,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check URL params for admin secret
     const params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === 'admin123') { // Simple secret key
+    if (params.get('admin') === 'ni140410') { // Simple secret key
       setIsAdminMode(true);
       sessionStorage.setItem('@JapaStore:inline_admin', 'true');
       // Remove param from URL to keep it clean

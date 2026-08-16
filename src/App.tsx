@@ -18,8 +18,6 @@ import { LancamentosPage } from './pages/LancamentosPage';
 import { RoupasPage } from './pages/RoupasPage';
 import { TenisPage } from './pages/TenisPage';
 import { AcessoriosPage } from './pages/AcessoriosPage';
-import { SobrePage } from './pages/SobrePage';
-import { FaqPage } from './pages/FaqPage';
 import { ContatoPage } from './pages/ContatoPage';
 import { SearchPage } from './pages/SearchPage';
 import { FavoritosPage } from './pages/FavoritosPage';
@@ -65,8 +63,6 @@ function StoreLayout({
           <Route path="/roupas" element={<RoupasPage />} />
           <Route path="/tenis" element={<TenisPage />} />
           <Route path="/acessorios" element={<AcessoriosPage />} />
-          <Route path="/sobre" element={<SobrePage />} />
-          <Route path="/faq" element={<FaqPage />} />
           <Route path="/contato" element={<ContatoPage />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/favoritos" element={<FavoritosPage />} />

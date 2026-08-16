@@ -36,10 +36,15 @@ export function ProductGrid({
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let query = supabase.from('products').select('*');
+      
+      // Optimização: filtra direto no banco de dados se houver categoria
+      // Isso evita baixar centenas de produtos desnecessários.
+      if (category) {
+        query = query.ilike('category', `%${category}%`);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) {
         console.warn('Supabase not connected or error fetching products:', JSON.stringify(error));
@@ -48,18 +53,18 @@ export function ProductGrid({
 
       if (data) {
         // Map Supabase columns to Product type
-        const supabaseProducts: Product[] = data.map(mapSupabaseProduct);
+        let supabaseProducts: Product[] = data.map(mapSupabaseProduct);
         
-        let filteredProducts = supabaseProducts;
+        // Mantém o filtro local por precaução contra acentos que possam não ter sido pegos pelo ilike
         if (category) {
-          filteredProducts = supabaseProducts.filter(p => {
-            const prodCat = p.category?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+          supabaseProducts = supabaseProducts.filter(p => {
+            const prodCat = p.category?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "") || "";
             const targetCat = category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            return prodCat === targetCat;
+            return prodCat.includes(targetCat) || targetCat.includes(prodCat);
           });
         }
         
-        setProducts(filteredProducts);
+        setProducts(supabaseProducts);
       }
     } catch (err) {
       console.warn('Failed to fetch products (probably no Supabase backend)', err);
