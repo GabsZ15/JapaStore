@@ -28,6 +28,7 @@ CREATE TABLE public.settings (
   nav_link2 TEXT,
   nav_link3 TEXT,
   nav_link4 TEXT,
+  site_content JSONB,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -50,8 +51,24 @@ VALUES (
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
 
--- 6. CRIAR POLÍTICAS DE ACESSO
--- Como nosso admin usa apenas uma senha simples no front-end, vamos liberar acesso público 
--- para leitura e escrita por enquanto.
-CREATE POLICY "Enable all access for all users on products" ON public.products FOR ALL USING (true);
-CREATE POLICY "Enable all access for all users on settings" ON public.settings FOR ALL USING (true);
+-- 6. CRIAR POLÍTICAS DE ACESSO PROTEGIDAS (RLS)
+-- Leitura pública (SELECT) liberada para visitantes navegarem na loja.
+-- Inserção, alteração e exclusão (INSERT, UPDATE, DELETE) são bloqueadas para clientes públicos.
+-- Operações administrativas de escrita dependem exclusivamente das rotas protegidas em api/admin/* usando SUPABASE_SERVICE_ROLE_KEY.
+
+DROP POLICY IF EXISTS "Enable all access for all users on products" ON public.products;
+DROP POLICY IF EXISTS "Allow public read access on products" ON public.products;
+CREATE POLICY "Allow public read access on products" 
+ON public.products 
+FOR SELECT 
+TO public 
+USING (true);
+
+DROP POLICY IF EXISTS "Enable all access for all users on settings" ON public.settings;
+DROP POLICY IF EXISTS "Allow public read access on settings" ON public.settings;
+CREATE POLICY "Allow public read access on settings" 
+ON public.settings 
+FOR SELECT 
+TO public 
+USING (true);
+

@@ -105,48 +105,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const updateSettings = async (newSettings: SiteSettings) => {
     try {
-      const { error } = await supabase
-        .from('settings')
-        .upsert({
-          id: 1,
-          top_bar_text: newSettings.topBarText,
-          hero_title: newSettings.heroTitle,
-          hero_subtitle: newSettings.heroSubtitle,
-          carousel_title: newSettings.carouselTitle,
-          whatsapp_number: newSettings.whatsappNumber,
-          nav_link1: newSettings.navLink1,
-          nav_link2: newSettings.navLink2,
-          nav_link3: newSettings.navLink3,
-          nav_link4: newSettings.navLink4,
-          site_content: newSettings.siteContent,
-          updated_at: new Date().toISOString(),
-        });
-      
-      if (error) {
-        if (error.code === '42703') {
-          console.warn('Column site_content missing in DB! Using localStorage as fallback.');
-          localStorage.setItem('siteContent_fallback', JSON.stringify(newSettings.siteContent));
-          const { error: fallbackError } = await supabase
-            .from('settings')
-            .upsert({
-              id: 1,
-              top_bar_text: newSettings.topBarText,
-              hero_title: newSettings.heroTitle,
-              hero_subtitle: newSettings.heroSubtitle,
-              carousel_title: newSettings.carouselTitle,
-              whatsapp_number: newSettings.whatsappNumber,
-              nav_link1: newSettings.navLink1,
-              nav_link2: newSettings.navLink2,
-              nav_link3: newSettings.navLink3,
-              nav_link4: newSettings.navLink4,
-              updated_at: new Date().toISOString(),
-            });
-          if (fallbackError) throw fallbackError;
-        } else {
-          throw error;
-        }
-      } else {
-        localStorage.removeItem('siteContent_fallback');
+      const adminSecret = sessionStorage.getItem('@JapaStore:admin_secret') || '';
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Secret': adminSecret
+        },
+        body: JSON.stringify(newSettings)
+      });
+
+      const resData = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(resData.error || 'Erro ao atualizar configurações via API administrativa.');
       }
 
       setSettings(newSettings);

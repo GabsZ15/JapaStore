@@ -1,7 +1,7 @@
-import { Hero } from '../components/Hero';
-import { ProductGrid } from '../components/ProductGrid';
-import { HomeCategories } from '../components/HomeCategories';
-import { Benefits } from '../components/Benefits';
+import { Hero } from '../components';
+import { ProductGrid } from '../components';
+import { HomeCategories } from '../components';
+import { Benefits } from '../components';
 import { useSettings } from '../contexts/SettingsContext';
 
 export function HomePage() {

@@ -4,7 +4,7 @@ import { Search, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Product } from '../types';
 import { mapSupabaseProduct } from '../utils/productUtils';
-import { ProductCard } from '../components/ProductCard';
+import { ProductCard } from '../components';
 import { useSettings } from '../contexts/SettingsContext';
 
 export function SearchPage() {

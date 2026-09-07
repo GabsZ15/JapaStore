@@ -5,12 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { TopBar } from './components/TopBar';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
-import { AuthModal } from './components/AuthModal';
-import { CartDrawer } from './components/CartDrawer';
-import { ScrollToTop } from './components/ScrollToTop';
+import { TopBar, Header, Footer, AuthModal, CartDrawer, ScrollToTop, AdminToolbar } from './components';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -32,7 +27,7 @@ import { FavoritesProvider } from './contexts/FavoritesContext';
 import { CartProvider, useCart } from './contexts/CartContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { AdminProvider } from './contexts/AdminContext';
-import { AdminToolbar } from './components/AdminToolbar';
+
 
 function StoreLayout({ 
   toggleTheme, 

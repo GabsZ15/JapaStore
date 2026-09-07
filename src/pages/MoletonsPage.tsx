@@ -1,6 +1,6 @@
-import { ProductGrid } from '../components/ProductGrid';
+import { ProductGrid } from '../components';
 import { useSettings } from '../contexts/SettingsContext';
-import { EditableText } from '../components/EditableText';
+import { EditableText } from '../components';
 
 export function MoletonsPage() {
   const { settings, updateSettings } = useSettings();

@@ -1,29 +1,22 @@
 # 🛍️ JapaStore — Streetwear E-Commerce Web Application
 
-![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4.21-000000?style=for-the-badge&logo=express&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-2.112-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-
-Projeto de e-commerce voltado para vestuário e produtos de moda streetwear. A aplicação utiliza **React** com **TypeScript** no front-end e um servidor **Node.js/Express** integrado ao banco de dados relacional **Supabase** no back-end.
+O **JapaStore** é uma aplicação de e-commerce voltada para o segmento de vestuário e cultura streetwear. A aplicação foi desenvolvida utilizando **React 19** com **TypeScript** no front-end e arquitetura serverless no back-end via **Vercel Serverless Functions**, conectando-se ao banco de dados relacional **Supabase (PostgreSQL)** e integrando-se à API de logística da **SuperFrete**.
 
 ---
 
 ## 🚀 Funcionalidades
 
-### **Front-End & Interface**
-- 🛒 **Vitrine de Produtos:** Navegação por categorias (Camisetas, Bermudas, Moletons, Acessórios e Lançamentos).
-- 🔍 **Busca de Produtos:** Filtro dinâmico para localização rápida de itens.
-- 🛍️ **Carrinho de Compras (Cart Drawer):** Componente em gaveta lateral para gerenciamento de itens no carrinho.
-- ❤️ **Lista de Favoritos:** Salvamento e exibição de itens favoritados via Context API.
-- 🚚 **Cálculo de Frete:** Modal interativo para inserção de CEP e consulta de frete.
+### **Front-End & Experiência do Usuário**
+- 🛒 **Vitrine de Produtos:** Navegação por categorias (Camisetas, Bermudas, Moletons, Acessórios, Tênis, Roupas e Lançamentos).
+- 🔍 **Busca Dinâmica:** Sistema de pesquisa rápida com filtragem de itens por palavras-chave.
+- 🛍️ **Carrinho de Compras (Cart Drawer):** Componente em gaveta lateral para inclusão, alteração de quantidades e remoção de itens.
+- ❤️ **Lista de Favoritos:** Salvamento e gerenciamento persistente dos produtos favoritos.
+- 🚚 **Cálculo de Frete:** Integração com a API da SuperFrete para cálculo dinâmico de prazos e valores de envio com base no CEP do comprador.
 
-### **Painel Administrativo & Back-End**
-- ⚙️ **Editor de Conteúdo:** Interface de administração (`AdminPage`) para atualização dos textos, banners e links da loja.
-- 🔐 **Autenticação & Segurança:** Cliente Supabase configurado com tabela de produtos e configurações protegidas por políticas RLS (*Row Level Security*).
-- 📦 **API de Frete:** Rota customizada em Express (`/api/shipping/calculate`) integrada com a API da SuperFrete.
+### **Painel Administrativo & Segurança Back-End**
+- ⚙️ **Gerenciamento de Produtos e Configurações:** Interface administrativa (`AdminPage`) protegida para criação, edição e exclusão de produtos, além da personalização de banners, textos e links da loja.
+- 🔒 **Proteção RLS (Row Level Security):** Banco de dados Supabase configurado com regras de controle de acesso. Clientes públicos possuem acesso de leitura (`SELECT`), enquanto mutações (`INSERT`, `UPDATE`, `DELETE`) são restritas no banco de dados.
+- 🛡️ **Rotas Serverless Protegidas:** Mutações administrativas gerenciadas por endpoints isolados em `api/admin/*`, autenticados por cabeçalho de segredo (`X-Admin-Secret`) e executados com a chave de serviço (`SUPABASE_SERVICE_ROLE_KEY`) no servidor.
 
 ---
 
@@ -31,15 +24,15 @@ Projeto de e-commerce voltado para vestuário e produtos de moda streetwear. A a
 
 ### **Front-End**
 - **React 19** com **TypeScript**
-- **Tailwind CSS (v4)**
-- **Framer Motion (`motion`)**
+- **Tailwind CSS**
 - **Lucide React** (Ícones)
 - **React Router v7**
 
-### **Back-End & Banco de Dados**
-- **Node.js** & **Express**
+### **Back-End & Infraestrutura**
+- **Vercel Serverless Functions** (`api/admin/*`, `api/shipping/*`)
+- **Express / Node.js** (Servidor integrado para desenvolvimento local)
 - **Supabase** (PostgreSQL / `@supabase/supabase-js`)
-- **SuperFrete API** (Cálculo de envios)
+- **SuperFrete API** (Cálculo de envios postais)
 
 ---
 
@@ -47,44 +40,47 @@ Projeto de e-commerce voltado para vestuário e produtos de moda streetwear. A a
 
 ```text
 JapaStore/
-├── api/
-│   └── shipping/         # Rota de cálculo de frete
-├── public/               # Imagens estáticas e banners
-├── src/
-│   ├── components/       # Componentes reutilizáveis (Header, CartDrawer, Hero, etc.)
-│   │   └── admin/        # Componentes da área administrativa
-│   ├── contexts/         # Contextos React (Cart, Auth, Favorites, Settings, Admin)
-│   ├── lib/              # Inicialização do cliente Supabase
-│   ├── pages/            # Páginas da aplicação (HomePage, ProductPage, AdminPage, etc.)
-│   ├── utils/            # Utilitários e manipuladores de dados
-│   ├── App.tsx           # Configuração de rotas principais
-│   └── main.tsx          # Ponto de entrada do React
-├── database.sql          # Script SQL para criação das tabelas no Supabase
-├── server.ts             # Servidor Express integrado ao Vite Dev Server
-└── package.json          # Dependências do projeto
+├── api/                             # Endpoints Serverless (Vercel Backend)
+│   ├── admin/                       # Rotas protegidas administrativas
+│   │   ├── _adminAuth.ts            # Helper de autenticação e validação do segredo
+│   │   ├── products.ts              # Endpoint de cadastro/edição/exclusão de produtos
+│   │   └── settings.ts              # Endpoint de atualização de configurações
+│   └── shipping/
+│       └── calculate.ts             # Endpoint de cálculo de frete (SuperFrete)
+│
+├── public/                          # Imagens estáticas e logotipo da loja
+├── src/                             # Código fonte da aplicação SPA
+│   ├── components/                  # Componentes React organizados por domínios
+│   │   ├── admin/                   # Componentes do painel administrativo
+│   │   ├── auth/                    # Modais e fluxos de autenticação
+│   │   ├── cart/                    # Componente do carrinho lateral
+│   │   ├── common/                  # Componentes globais (Scroll, ErrorBoundary)
+│   │   ├── home/                    # Banners e seções da página inicial
+│   │   ├── layout/                  # Cabeçalho, rodapé e navegação
+│   │   ├── product/                 # Cards, grids e calculadora de frete
+│   │   └── index.ts                 # Centralizador de exportação de componentes
+│   ├── contexts/                    # Contextos Globais (Cart, Auth, Favorites, Settings, Admin)
+│   ├── hooks/                       # Custom hooks centralizados
+│   ├── lib/                         # Cliente de integração com o Supabase
+│   ├── pages/                       # Páginas principais da loja e do painel admin
+│   ├── utils/                       # Utilitários e manipuladores de dados
+│   ├── App.tsx                      # Rotas da aplicação
+│   ├── main.tsx                     # Ponto de entrada do React
+│   └── types.ts                     # Definições de interfaces e tipos TypeScript
+├── .env.example                     # Modelo de variáveis de ambiente (sem segredos)
+├── .gitignore                       # Regras de segurança e arquivos ignorados no Git
+├── database.sql                     # Script SQL oficial com tabelas e políticas RLS
+├── server.ts                        # Servidor Express para desenvolvimento local
+└── package.json                     # Dependências do projeto
 ```
-
----
-
-## 🤖 Uso de Inteligência Artificial (AI-Assisted Development)
-
-Este projeto foi desenvolvido utilizando ferramentas de **Inteligência Artificial Generativa** e técnicas de **Engenharia de Prompts** como apoio ao ciclo de desenvolvimento de software.
-
-A IA atuou como assistente técnico para:
-- **Estruturação e Implementação:** Auxílio na construção de componentes React, tipos TypeScript e rotas de backend.
-- **Pesquisa & Resolução de Problemas:** Diagnóstico de erros, refatoração de código e otimização de consultas ao Supabase.
-- **Interface & Responsividade:** Ajustes finos em utilitários do Tailwind CSS e animações de interface.
-- **Documentação e APIs:** Auxílio na documentação técnica e apoio na integração da API da SuperFrete.
-
-> **Nota sobre o processo:** A Inteligência Artificial atuou exclusivamente como ferramenta de produtividade e apoio técnico. A definição dos requisitos do produto, arquitetura das rotas, validação de regras de negócio, testes práticos e integração final de todos os componentes foram conduzidas de forma autônoma.
 
 ---
 
 ## 🔧 Como Executar o Projeto Localmente
 
 ### **Pré-requisitos**
-- Node.js (v18 ou superior)
-- npm ou bun
+- **Node.js** (v18 ou superior)
+- **NPM** ou **Bun**
 
 ### **Passo a Passo**
 
@@ -100,25 +96,45 @@ A IA atuou como assistente técnico para:
    ```
 
 3. **Configurar as Variáveis de Ambiente:**
-   Crie um arquivo `.env` na raiz do projeto contendo as chaves do seu projeto Supabase:
+   Crie um arquivo `.env` na raiz do projeto baseado no `.env.example`:
    ```env
-   VITE_SUPABASE_URL=sua_url_do_supabase
-   VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+   VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+   VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
+   SUPABASE_SERVICE_ROLE_KEY=sua-chave-service-role-privada
+   ADMIN_SECRET_KEY=seu-segredo-de-cabecalho-admin
+   SUPERFRETE_TOKEN=seu-token-da-superfrete
    ```
 
 4. **Configurar o Banco de Dados:**
-   Execute o script `database.sql` no **SQL Editor** do Supabase para criar as tabelas `products` e `settings`.
+   Execute o script `database.sql` no **SQL Editor** do Supabase para criar as tabelas `products` e `settings` e aplicar as políticas de segurança RLS.
 
 5. **Iniciar o ambiente de desenvolvimento:**
    ```bash
    npm run dev
    ```
-   Acesse a aplicação em `http://localhost:3000`.
+   Acesse a aplicação no navegador em `http://localhost:3000`.
+
+---
+
+## 🔐 Segurança e Variáveis de Ambiente
+
+As chaves privadas e tokens de API foram projetados para execução no ambiente do servidor:
+- `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_SECRET_KEY` e `SUPERFRETE_TOKEN` não são enviadas ao navegador e não possuem o prefixo `VITE_`.
+- O cliente público do Supabase (`VITE_SUPABASE_ANON_KEY`) possui acesso de leitura no PostgreSQL através de políticas RLS.
+
+---
+
+## 🤖 Uso de Inteligência Artificial (AI-Assisted Development)
+
+Este projeto foi construído com apoio de ferramentas de **Inteligência Artificial Generativa** como assistente de produtividade técnica no ciclo de desenvolvimento.
+
+- **Atuação da IA:** Apoio na estruturação inicial de componentes, diagnóstico de erros de TypeScript e suporte na otimização de consultas e rotas.
+- **Condução Humana:** Definição dos requisitos de negócio, arquitetura de segurança (RLS e serverless), design de interface, testes funcionais e integração final conduzidos autonomamente pelo desenvolvedor.
 
 ---
 
 ## 🧠 Aprendizados Práticos
 
-- **Gerenciamento de Estado Global:** Uso da React Context API para isolar a regra de negócio do carrinho, favoritos e configurações do painel.
-- **Integração de APIs:** Comunicação entre a SPA React e rotas de servidor Express integradas a serviços de terceiros.
-- **Banco de Dados Relacional:** Estruturação de tabelas no PostgreSQL e aplicação de permissões no Supabase.
+- **Arquitetura Serverless & Jamstack:** Separação entre aplicação SPA no cliente e rotas de escrita protegidas no servidor.
+- **Segurança em Bancos Relacionais:** Configuração de Row Level Security (RLS) no PostgreSQL via Supabase.
+- **Integração de APIs de Logística:** Comunicação assíncrona com webservices de cálculo de frete.

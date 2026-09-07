@@ -1,6 +1,0 @@
-{
-  "name": "JapaStore",
-  "description": "Minimalist streetwear e-commerce inspired by modern casual design.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

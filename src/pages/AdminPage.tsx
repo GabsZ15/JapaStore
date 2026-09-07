@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ContentEditor } from '../components/admin/ContentEditor';
+import { ContentEditor } from '../components';
 import { ArrowLeft, Edit, Trash2, Plus, Save, Store, UploadCloud, Upload, X, ImagePlus, Settings, ShoppingBag, Lock, LogIn, Loader2, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 import { Product, ProductVariant } from '../types';
 import { mapSupabaseProduct, stringifyProductDescription } from '../utils/productUtils';
@@ -130,9 +130,10 @@ export function AdminPage() {
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
-    if (secretKey === 'ni140410') { // Simple hardcoded secret key for demonstration
+    if (secretKey) {
       setIsAuthenticated(true);
       sessionStorage.setItem('@JapaStore:admin_auth', 'true');
+      sessionStorage.setItem('@JapaStore:admin_secret', secretKey);
     } else {
       alert('Chave de acesso incorreta!');
     }
@@ -141,6 +142,7 @@ export function AdminPage() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('@JapaStore:admin_auth');
+    sessionStorage.removeItem('@JapaStore:admin_secret');
   };
 
   const handleSaveSettings = async (e: FormEvent) => {
@@ -249,11 +251,18 @@ export function AdminPage() {
     );
     
     try {
+      const adminSecret = sessionStorage.getItem('@JapaStore:admin_secret') || secretKey || '';
+      
       if (editingId) {
-        // Update existing in Supabase
-        const { error } = await supabase
-          .from('products')
-          .update({
+        // Update existing via admin API endpoint
+        const response = await fetch('/api/admin/products', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Secret': adminSecret
+          },
+          body: JSON.stringify({
+            id: editingId,
             name,
             price: priceNum,
             installments: installmentsNum,
@@ -261,32 +270,39 @@ export function AdminPage() {
             image_url: imageUrl,
             description: finalDescription
           })
-          .eq('id', editingId);
+        });
 
-        if (error) throw error;
+        const resData = await response.json();
+        if (!response.ok) throw new Error(resData.error || 'Erro ao atualizar produto.');
         
       } else {
-        // Create new in Supabase
-        const { error } = await supabase
-          .from('products')
-          .insert({
+        // Create new via admin API endpoint
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Secret': adminSecret
+          },
+          body: JSON.stringify({
             name,
             price: priceNum,
             installments: installmentsNum,
             image_url: imageUrl,
             category,
             description: finalDescription
-          });
+          })
+        });
 
-        if (error) throw error;
+        const resData = await response.json();
+        if (!response.ok) throw new Error(resData.error || 'Erro ao cadastrar produto.');
       }
       
       // Refresh products list
       await fetchProducts();
       resetForm();
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Error saving product:', err);
-      alert('Ocorreu um erro ao salvar o produto.');
+      alert('Ocorreu um erro ao salvar o produto: ' + (err.message || ''));
     }
   };
 
@@ -323,12 +339,20 @@ export function AdminPage() {
     setDeleteFeedback(null);
     
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productToDelete);
+      const adminSecret = sessionStorage.getItem('@JapaStore:admin_secret') || secretKey || '';
+      const response = await fetch('/api/admin/products', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Secret': adminSecret
+        },
+        body: JSON.stringify({
+          id: productToDelete
+        })
+      });
 
-      if (error) throw error;
+      const resData = await response.json();
+      if (!response.ok) throw new Error(resData.error || 'Erro ao excluir produto.');
       
       await fetchProducts();
       

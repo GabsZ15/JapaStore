@@ -1,5 +1,5 @@
 import { useFavorites } from '../contexts/FavoritesContext';
-import { ProductCard } from '../components/ProductCard';
+import { ProductCard } from '../components';
 import { Heart } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
 

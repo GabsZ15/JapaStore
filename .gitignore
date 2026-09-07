@@ -1,8 +1,23 @@
+# Dependências e Compilação
 node_modules/
-build/
 dist/
+build/
 coverage/
-.DS_Store
-*.log
-.env*
+
+# Variáveis de Ambiente e Segredos
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Exceção para o modelo de ambiente
 !.env.example
+
+# Logs e arquivos de sistema
+*.log
+npm-debug.log*
+yarn-debug.log*
+.DS_Store
+Thumbs.db

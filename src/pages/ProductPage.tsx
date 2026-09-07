@@ -4,10 +4,10 @@ import { supabase } from '../lib/supabase';
 import { Product } from '../types';
 import { mapSupabaseProduct } from '../utils/productUtils';
 import { useCart } from '../contexts/CartContext';
-import { ShippingCalculator } from '../components/ShippingCalculator';
+import { ShippingCalculator } from '../components';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { Heart, ChevronLeft, ShoppingBag, Minus, Plus } from 'lucide-react';
-import { TopBar } from '../components/TopBar';
+import { TopBar } from '../components';
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
