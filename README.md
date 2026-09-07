@@ -66,6 +66,20 @@ JapaStore/
 
 ---
 
+## 🤖 Uso de Inteligência Artificial (AI-Assisted Development)
+
+Este projeto foi desenvolvido utilizando ferramentas de **Inteligência Artificial Generativa** e técnicas de **Engenharia de Prompts** como apoio ao ciclo de desenvolvimento de software.
+
+A IA atuou como assistente técnico para:
+- **Estruturação e Implementação:** Auxílio na construção de componentes React, tipos TypeScript e rotas de backend.
+- **Pesquisa & Resolução de Problemas:** Diagnóstico de erros, refatoração de código e otimização de consultas ao Supabase.
+- **Interface & Responsividade:** Ajustes finos em utilitários do Tailwind CSS e animações de interface.
+- **Documentação e APIs:** Auxílio na documentação técnica e apoio na integração da API da SuperFrete.
+
+> **Nota sobre o processo:** A Inteligência Artificial atuou exclusivamente como ferramenta de produtividade e apoio técnico. A definição dos requisitos do produto, arquitetura das rotas, validação de regras de negócio, testes práticos e integração final de todos os componentes foram conduzidas de forma autônoma.
+
+---
+
 ## 🔧 Como Executar o Projeto Localmente
 
 ### **Pré-requisitos**
